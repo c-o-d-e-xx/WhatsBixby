@@ -195,13 +195,13 @@ Module(
         return await message.sendSticker(message.jid, download, {
           author: config.STICKER_DATA.split(/[|;,]/)[0] || config.STICKER_DATA,
           packname: config.STICKER_DATA.split(/[|;,]/)[1],
-        });
+        }, { quoted: message });
       } else if (/image|video|webp/.test(message.mime)) {
         let download = await message.client.downloadMediaMessage(message);
         return await message.sendSticker(message.jid, download, {
           author: config.STICKER_DATA.split(/[|;,]/)[0] || config.STICKER_DATA,
           packname: config.STICKER_DATA.split(/[|;,]/)[1],
-        });
+        }, { quoted: message });
       } else {
         return await message.reply(
           lang.STICKER.ERROR
