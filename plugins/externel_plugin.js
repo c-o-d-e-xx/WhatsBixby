@@ -1,7 +1,6 @@
-const {
+        const {
     Module,
-    runtime,
-    personalDB,
+    getVar,
     extractUrlsFromString,
     lang,
     config
@@ -15,8 +14,7 @@ const fs = require("fs");
 
 Module({
     pattern: 'restart ?(.*)',
-    desc: lang.RESTART.DESC,
-    react: "🥱",
+    desc: 'Restarting Bot',
     type: "system",
     fromMe: true
 }, async (message, match) => {
@@ -25,8 +23,7 @@ Module({
 })
 Module({
     pattern: 'plugin ?(.*)',
-    desc: lang.EXTERNAL_PLUGIN.DESC,
-    react: "🦥",
+    desc: 'Costome Plugins Installation',
     type: "system",
     fromMe: true
 }, async (message, match) => {
@@ -36,7 +33,7 @@ Module({
     if (match && extractUrlsFromString(match)) {
         await message.reply(lang.BASE.WAIT)
         const urll = extractUrlsFromString(match);
-        if (!urll[0]) return message.send(lang.BASE.NEED_URL)
+        if (!urll[0]) return message.reply(lang.BASE.NEED_URL)
         urll.map(async (url) => {
             let NewUrl = !url?.toString().includes('/raw') ? url.toString() : url.toString().split('/raw')[0];
             let plugin_name;
@@ -56,7 +53,7 @@ Module({
                     return await message.reply(e);
                 }
                 await message.reply(lang.EXTERNAL_PLUGIN.INSTALLED.format(plugin_name));
-                await personalDB(['plugins'], {
+                await getVar(['plugins'], {
                     content: {
                         [plugin_name.split(',')[0]]: NewUrl
                     }
@@ -67,7 +64,7 @@ Module({
     } else {
         const {
             plugins
-        } = await personalDB(['plugins'], {
+        } = await getVar(['plugins'], {
             content: {}
         }, 'get');
         if (!Object.keys(plugins)[0]) return await message.reply(lang.EXTERNAL_PLUGIN.NO_PLUGIN)
@@ -80,15 +77,14 @@ Module({
 })
 Module({
     pattern: 'remove ?(.*)',
-    desc: lang.EXTERNAL_PLUGIN.REMOVE_DESC,
-    react: "😶",
+    desc: 'Removing Costume Plugins',
     type: "system",
     fromMe: true
 }, async (message, match) => {
-    if (!match) return await message.send("*Give me a plugin name thet you want to remove*");
+    if (!match) return await message.reply("*_Give me a plugin name thet you want to remove_*");
     const {
         plugins
-    } = await personalDB(['plugins'], {
+    } = await getVar(['plugins'], {
         content: {}
     }, 'get');
     if (!Object.keys(plugins)[0]) return await message.reply(lang.EXTERNAL_PLUGIN.NO_PLUGIN)
@@ -96,12 +92,12 @@ Module({
     for (const p in plugins) {
         if (p == match) {
             Available = true;
-            await personalDB(['plugins'], {
+            await getVar(['plugins'], {
                 content: {
                     id: match
                 }
             }, 'delete');
-            await message.send(lang.EXTERNAL_PLUGIN.REMOVED);
+            await message.reply(lang.EXTERNAL_PLUGIN.REMOVED);
             break;
         }
     }
