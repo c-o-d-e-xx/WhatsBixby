@@ -4,171 +4,168 @@ const {
     sendPhoto,
     sendVoice,
     sendGif,
-    sendBassAudio,
-    sendSlowAudio,
-    sendBlownAudio,
-    sendDeepAudio,
-    sendErrapeAudio,
-    sendFastAudio,
-    sendFatAudio,
-    sendNightcoreAudio,
-    sendReverseAudio,
-    sendSquirrelAudio,
+    sendBass,
+    sendSlow,
+    sendBlown,
+    sendDeep,
+    sendErrape,
+    sendFast,
+    sendFat,
+    sendNightcore,
+    sendReverse,
+    sendSquirrel,
     toAudio,
     toPTT,
     toVideo,
     AudioMetaData,
-    lang,
+    labg,
     config
 } = require('../lib');
-const fs = require("fs");
-const path = require("path");
 
 Module({
     pattern: 'photo ?(.*)',
-    desc: lang.CONVERTER.PHOTO_DESC,
+    desc: 'Convert sticker to Photo',
     type: "converter",
     fromMe: isPublic
 }, async (message) => {
-    if (!message.reply_message.sticker) return  await message.reply(lang.BASE.NEED.format("non animated sticker message"));
-    if(message.reply_message.isAnimatedSticker) return  await message.reply(lang.BASE.NEED.format("please reply to a non animated sticker"));
+    if (!message.reply_message.sticker) return  await message.reply("_Replay Non animated sticker message__");
+    if(message.reply_message.isAnimatedSticker) return  await message.reply("_please reply to a non animated sticker_");
     return await sendPhoto(message);
 });
 Module({
     pattern: 'mp4 ?(.*)',
-    desc: lang.CONVERTER.VIDEO_DESC,
+    desc: 'Convert To mp4',
     type: "converter",
     fromMe: isPublic
 }, async (message, match) => {
-    if (!message.reply_message.sticker) return message.reply(lang.BASE.NEED.format("animated sticker message"));
-    if(!message.reply_message.isAnimatedSticker) return  await message.reply(lang.BASE.NEED.format("please reply to an animated sticker"));
+    if (!message.reply_message.sticker) return message.reply("_Replay any animated sticker message_");
+    if(!message.reply_message.isAnimatedSticker) return  await message.reply("_please reply to an animated sticker_");
     let media = await toVideo(await message.reply_message.download())
     return await message.send(media,{
-        mimetype: 'video/mp4', quoted: message
+        mimetype: 'video/mp4',
     },'video')
 });
 Module({
     pattern: 'voice ?(.*)',
-    desc: lang.CONVERTER.AUDIO_DESC,
+    desc: 'Convert Voice Messags',
     type: "converter",
     fromMe: isPublic
 }, async (message) => {
-    if (!message.reply_message.audio) return message.reply(lang.BASE.NEED.format("video/audio message"));
+    if (!message.reply_message.audio) return message.reply("_Replay Any video/audio message_");
     let media = await toPTT(await message.reply_message.download())
     return await message.send(media,{
         mimetype: 'audio/mpeg',
-        ptt: true,
-        quoted: message
+        ptt: true, 
     }, 'audio')
 });
 Module({
     pattern: 'gif ?(.*)',
-    desc: lang.CONVERTER.GIF_DESC,
+    desc: 'Convert To gift Message',
     type: "converter",
     fromMe: isPublic
 }, async (message) => {
     
-    if (!message.reply_message.sticker || message.reply_message.video) return message.reply(lang.BASE.NEED.format("animated sticker/video message"));
+    if (!message.reply_message.sticker || message.reply_message.video) return message.reply("_Replay animated sticker/video message_");
     return await sendGif(message)
 });
 Module({
     pattern: 'bass ?(.*)',
-    desc: lang.CONVERTER.AUDIO_EDIT_DESC,
-    type: "audio-edit",
+    desc: 'Edit Your Audio Messages',
+    type: "audio edit",
     fromMe: isPublic
 }, async (message) => {
-    if (!message.reply_message.audio) return message.reply(lang.BASE.NEED.format("audio message"));
-    return await sendBassAudio(message)
+    if (!message.reply_message.audio) return message.reply("_Replay Any Audio Message_");
+    return await sendBass(message)
 });
 Module({
     pattern: 'slow ?(.*)',
-    desc: lang.CONVERTER.AUDIO_EDIT_DESC,
-    type: "audio-edit",
+    desc: 'Edit Your Audio Messages',
+    type: "audio edit",
     fromMe: isPublic
 }, async (message) => {
-    if (!message.reply_message.audio) return message.reply(lang.BASE.NEED.format("audio message"));
-    return await sendSlowAudio(message)
+    if (!message.reply_message.audio) return message.reply("_Replay Audio Message_");
+    return await sendSlow(message)
 });
 Module({
     pattern: 'blown ?(.*)',
-    desc: lang.CONVERTER.AUDIO_EDIT_DESC,
-    type: "audio-edit",
+    desc: 'Edit Your Audio Messages',
+    type: "audio edit",
     fromMe: isPublic
 }, async (message) => {
-    if (!message.reply_message.audio) return message.reply(lang.BASE.NEED.format("audio message"));
-    return await sendBlownAudio(message)
+    if (!message.reply_message.audio) return message.reply("_Replay Audio Message_");
+    return await sendBlown(message)
 });
 Module({
     pattern: 'deep ?(.*)',
-    desc: lang.CONVERTER.AUDIO_EDIT_DESC,
-    type: "audio-edit",
+    desc: 'Edit Your Audio Messages',
+    type: "audio edit",
     fromMe: isPublic
 }, async (message) => {
-    if (!message.reply_message.audio) return message.reply(lang.BASE.NEED.format("audio message"));
-    return await sendDeepAudio(message);
+    if (!message.reply_message.audio) return message.reply("_Replay Audio Message_");
+    return await sendDeep(message);
 });
 Module({
     pattern: 'earrape ?(.*)',
-    desc: lang.CONVERTER.AUDIO_EDIT_DESC,
-    type: "audio-edit",
+    desc: 'Edit Your Audio Messages',
+    type: "audio edit",
     fromMe: isPublic
 }, async (message) => {
-    if (!message.reply_message.audio) return message.reply(lang.BASE.NEED.format("audio message"));
-    return await sendErrapeAudio(message)
+    if (!message.reply_message.audio) return message.reply("_Replay Audio Message_");
+    return await sendErrape(message)
 });
 Module({
     pattern: 'fast ?(.*)',
-    desc: lang.CONVERTER.AUDIO_EDIT_DESC,
-    type: "audio-edit",
+    desc: 'Edit Your Audio Messages',
+    type: "audio edit",
     fromMe: isPublic
 }, async (message) => {
-    if (!message.reply_message.audio) return message.reply(lang.BASE.NEED.format("audio message"));
-    return await sendFastAudio(message)
+    if (!message.reply_message.audio) return message.reply("_Replay Audio Message_");
+    return await sendFast(message)
 });
 Module({
     pattern: 'fat ?(.*)',
-    desc: lang.CONVERTER.AUDIO_EDIT_DESC,
-    type: "audio-edit",
+    desc: 'Edit Your Audio Messages',
+    type: "audio edit",
     fromMe: isPublic
 }, async (message) => {
-    if (!message.reply_message.audio) return message.reply(lang.BASE.NEED.format("audio message"));
-    return await sendFatAudio(message);
+    if (!message.reply_message.audio) return message.reply("_Replay Audio Message_");
+    return await sendFat(message);
 });
 Module({
     pattern: 'nightcore ?(.*)',
-    desc: lang.CONVERTER.AUDIO_EDIT_DESC,
-    type: "audio-edit",
+    desc: 'Edit Your Audio Messages',
+    type: "audio edit",
     fromMe: isPublic
 }, async (message) => {
-    if (!message.reply_message.audio) return message.reply(lang.BASE.NEED.format("audio message"));
-    return await sendNightcoreAudio(message);
+    if (!message.reply_message.audio) return message.reply("_Replay Audio Message_");
+    return await sendNightcore(message);
 });
 Module({
     pattern: 'reverse ?(.*)',
-    desc: lang.CONVERTER.AUDIO_EDIT_DESC,
-    type: "audio-edit",
+    desc: 'Edit Your Audio Messages',
+    type: "audio edit",
     fromMe: isPublic
 }, async (message) => {
-    if (!message.reply_message.audio) return message.reply(lang.BASE.NEED.format("audio message"));
-    return await sendReverseAudio(message);
+    if (!message.reply_message.audio) return message.reply("_Replay Audio Message_");
+    return await sendReverse(message);
 });
 Module({
     pattern: 'squirrel ?(.*)',
-    desc: lang.CONVERTER.AUDIO_EDIT_DESC,
-    type: "audio-edit",
+    desc: 'Edit Your Audio Messages',
+    type: "audio edit",
     fromMe: isPublic
 }, async (message) => {
-    if (!message.reply_message.audio) return message.reply(lang.BASE.NEED.format("audio message"));
-    return await sendSquirrelAudio(message);
+    if (!message.reply_message.audio) return message.reply("_Replay Audio Message_");
+    return await sendSquirrel(message);
 });
 
 Module({
     pattern: 'mp3 ?(.*)',
-    desc: lang.CONVERTER.MP3_DESC,
+    desc: 'Convert Video to Mp3',
     type: "converter",
     fromMe: isPublic
 }, (async (message) => {
-    if (!message.reply_message.audio && !message.reply_message.video) return message.reply(lang.BASE.NEED.format("video message"));
+    if (!message.reply_message.audio && !message.reply_message.video) return message.reply("_Replay Any Video/Audio_");
     const opt = {
                 title: config.AUDIO_DATA.split(/[|,;]/)[0] || config.AUDIO_DATA,
                 body: config.AUDIO_DATA.split(/[|,;]/)[1],
@@ -179,14 +176,16 @@ Module({
         mimetype: 'audio/mpeg', quoted: message
     },'audio')
 }));
+
+
+
 Module(
   {
     pattern: "sticker",
     fromMe: isPublic,
-    desc: lang.STICKER.DESC,
-    type : 'converter',
-    usage : "to convert short video or image to sticker fromate, ex:- sticker[repleyed_msg]"
-  },
+    desc: 'Convert Your Images Videos in Sticker',
+    type : 'converter'
+      },
   async (message, match) => {
     if (!/image|video|webp/.test(message.mime)) return await message.reply(
       lang.STICKER.ERROR
@@ -196,13 +195,13 @@ Module(
         return await message.sendSticker(message.jid, download, {
           author: config.STICKER_DATA.split(/[|;,]/)[0] || config.STICKER_DATA,
           packname: config.STICKER_DATA.split(/[|;,]/)[1],
-        }, { quoted: message });
+        });
       } else if (/image|video|webp/.test(message.mime)) {
         let download = await message.client.downloadMediaMessage(message);
         return await message.sendSticker(message.jid, download, {
           author: config.STICKER_DATA.split(/[|;,]/)[0] || config.STICKER_DATA,
           packname: config.STICKER_DATA.split(/[|;,]/)[1],
-        }, { quoted: message });
+        });
       } else {
         return await message.reply(
           lang.STICKER.ERROR
@@ -210,5 +209,3 @@ Module(
       }
   }
 );
-
-
