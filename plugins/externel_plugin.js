@@ -1,4 +1,4 @@
-        const {
+const {
     Module,
     getVar,
     extractUrlsFromString,
