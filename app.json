@@ -36,6 +36,16 @@
       "required": true,
       "value": "."
     },
+    "AUTO_READ": {
+      "description": "Automatically Reading Your Messages",
+      "required": true,
+      "value": "false"
+    },
+    "AUTO_REACT": {
+      "description": "Automatically Reaction Messages",
+      "required": true,
+      "value": "false"
+    },
     "AUDIO_DATA": {
       "description": "audio metadata",
       "required": true,
