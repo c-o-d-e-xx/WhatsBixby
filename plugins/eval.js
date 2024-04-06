@@ -1,22 +1,4 @@
 const{Module}=require('../lib');
-const {
-    extensionForMediaMessage,
-    extractMessageContent,
-    jidNormalizedUser,
-    getContentType,
-    normalizeMessageContent,
-    proto,
-    delay,
-    areJidsSameUser,
-    downloadContentFromMessage,
-    getBinaryNodeChild,
-    WAMediaUpload,
-    generateForwardMessageContent,
-    generateLinkPreviewIfRequired,
-    generateWAMessageFromContent,
-    getBinaryNodeChildren
-  } = require("@whiskeysockets/baileys");
-const bs = require("@whiskeysockets/baileys");
 const lib = require('../lib');
 const util = require("util");
 const Config = require("../config")
@@ -32,9 +14,7 @@ Module({
                 onlyGroup :false,
 		pattern: 'eval',
 		desc: 'this send evaled data for your request',
-                react: "💥",
-                type : "owner",
-                usage: "give evaled data for your script"
+                type : "owner"
 	   },
 	async (message, Texts, cmd, chatUpdate) => {
     let m = message, sock = c = conn = message.client;
