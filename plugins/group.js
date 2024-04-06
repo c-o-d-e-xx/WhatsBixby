@@ -5,12 +5,14 @@ const {
 	getString,
 	infoMessage,
 	lang,
-	groupDB,
+	getVar,
+	broadcast,
 	config,
 	poll,
 	PREFIX
 } = require('../lib');
 
+const actions = ['kick','warn','null']
 
 Module({
 	pattern: 'promote ?(.*)',
@@ -27,7 +29,7 @@ Module({
 	if (!message.reply_message.sender) return message.reply(lang.BASE.NEED.format("user"));
 	await message.client.groupParticipantsUpdate(message.jid,
 		[message.reply_message.sender], "promote");
-	message.reply(lang.GROUP.PROMOTE.INFO.format(`@${message.reply_message.sender.split('@')[0]}`), {
+	message.send(lang.GROUP.PROMOTE.INFO.format(`@${message.reply_message.sender.split('@')[0]}`), {
 		mentions: [message.reply_message.sender]
 	})
 });
@@ -46,7 +48,7 @@ Module({
 	if (!message.reply_message.sender) return message.reply(lang.BASE.NEED.format("user"));
 	await message.client.groupParticipantsUpdate(message.jid,
 		[message.reply_message.sender], "demote");
-	return await message.reply(lang.GROUP.DEMOTE.INFO.format(`@${message.reply_message.sender.split('@')[0]}`), {
+	return await message.send(lang.GROUP.DEMOTE.INFO.format(`@${message.reply_message.sender.split('@')[0]}`), {
 		mentions: [message.reply_message.sender]
 	})
 });
@@ -68,7 +70,7 @@ Module({
 		if (!admin && !message.isCreator) return;
 		await message.client.groupParticipantsUpdate(message.jid,
 			[user], "remove");
-		return await message.reply(lang.GROUP.KICK.INFO.format(`@${user.split('@')[0]}`), {
+		return await message.send(lang.GROUP.KICK.INFO.format(`@${user.split('@')[0]}`), {
 			mentions: [user]
 		});
 	} else if (match.toLowerCase() == 'all') {
@@ -85,7 +87,7 @@ Module({
 			await message.client.groupParticipantsUpdate(message.jid,
 				[k], "remove");
 		});
-		return await message.reply('all group Participants will been kicked!')
+		return await message.reply('_All group Participants will been kicked!_')
 	}
 });
 Module({
@@ -114,25 +116,25 @@ Module({
 			message.reply(lang.GROUP.ADD.INVITE);
 			return await message.sendGroupInviteMessage(users);
 		} else if (su[0].status == 408) {
-			await message.reply(lang.GROUP.ADD.LEFTED.format("@" + users.split('@')[0]), {
+			await message.send(lang.GROUP.ADD.LEFTED.format("@" + users.split('@')[0]), {
 				mentions: [users]
 			})
 			const code = await message.client.groupInviteCode(message.jid);
 			return await message.client.sendMessage(users, {text: `https://chat.whatsapp.com/${code}`})
 		} else if (su[0].status == 401) {
-			await message.reply(lang.GROUP.ADD.BLOCKED.format("@" + users.split('@')[0]), {
+			await message.send(lang.GROUP.ADD.BLOCKED.format("@" + users.split('@')[0]), {
 				mentions: [users]
 			})
 		} else if (su[0].status == 200) {
-			return await message.reply(lang.GROUP.ADD.ADDED.format("@" + users.split('@')[0]), {
+			return await message.send(lang.GROUP.ADD.ADDED.format("@" + users.split('@')[0]), {
 				mentions: [users]
 			})
 		} else if (su[0].status == 409) {
-			return await message.reply(lang.GROUP.ADD.ALLREADY.format("@" + users.split('@')[0]), {
+			return await message.send(lang.GROUP.ADD.ALLREADY.format("@" + users.split('@')[0]), {
 				mentions: [users]
 			})
 		} else {
-			return await message.reply(JSON.stringify(su));
+			return await message.send(JSON.stringify(su));
 		}
 	}
 });
@@ -169,7 +171,7 @@ Module({
 	if (!message.reply_message.image) return await message.reply(lang.BASE.NEED.format("image message"));
 	let download = await message.reply_message.download();
 	await message.updateProfilePicture(message.jid, download);
-	return message.reply(lang.GROUP.FULL_GPP.INFO);
+	return message.reply('_Group Icon Updated!_');
 });
 Module({
 	pattern: 'gname ?(.*)',
@@ -248,7 +250,7 @@ Module({
 	if (!config.ADMIN_SUDO_ACCESS && !message.isCreator) return;
 	if (!admin && !message.isCreator) return;
 	await message.client.groupSettingUpdate(message.jid, "locked");
-	return await message.reply(lang.GROUP.LOCK.SUCCESS)
+	return await message.reply('_Group Settings Locked_')
 });
 Module({
 	pattern: 'unlock ?(.*)',
@@ -263,7 +265,7 @@ Module({
 	if (!config.ADMIN_SUDO_ACCESS && !message.isCreator) return;
 	if (!admin && !message.isCreator) return;
 	await message.client.groupSettingUpdate(message.jid, "unlocked");
-	return await message.reply(lang.GROUP.UNLOCK.SUCCESS)
+	return await message.reply('_Group Settings Unlocked_')
 });
 Module({
 	pattern: 'left ?(.*)',
@@ -302,7 +304,7 @@ Module({
 	if (!config.ADMIN_SUDO_ACCESS && !message.isCreator) return;
 	if (!admin && !message.isCreator) return;
 	await message.client.groupRevokeInvite(message.jid);
-	return await message.reply(lang.GROUP.REVOKE.INFO)
+	return await message.reply('_Group link revoked._')
 });
 Module({
 	pattern: 'join ?(.*)',
@@ -315,7 +317,7 @@ Module({
 	let urlArray = (match).trim().split("/");
 	if (!urlArray[2] == 'chat.whatsapp.com') return await message.reply(lang.BASE.INVALID_URL)
 	const response = await message.client.groupAcceptInvite(urlArray[3]);
-	return await message.reply(lang.BASE.SUCCESS)
+	return await message.reply('_Group Joined Successfully_')
 });
 Module({
 	pattern: 'getinfo ?(.*)',
@@ -332,7 +334,7 @@ Module({
 	if (!match || !match.match(/^https:\/\/chat\.whatsapp\.com\/[a-zA-Z0-9]/)) return await message.reply(lang.GROUP.GET_INFO.GIVE_URL);
 	let urlArray = (match).trim().split("/")[3];
 	const response = await message.client.groupGetInviteInfo(urlArray)
-	return await message.reply("_id: " + response.id + lang.GROUP.GET_INFO.INFO.format(response.subject, (response.owner ? response.owner.split('@')[0] : 'unknown'), response.size, response.restrict, response.announce, require('moment-timezone')(response.creation * 1000).tz('Asia/Kolkata').format('DD/MM/YYYY HH:mm:ss'), response.desc))
+	return await message.reply("id: " + response.id + lang.GROUP.GET_INFO.INFO.format(response.subject, (response.owner ? response.owner.split('@')[0] : 'unknown'), response.size, response.restrict, response.announce, require('moment-timezone')(response.creation * 1000).tz('Asia/Kolkata').format('DD/MM/YYYY HH:mm:ss'), response.desc))
 });
 
 
@@ -355,7 +357,7 @@ Module({
 		msg += `*total options: ${obj.length}*\n`;
 		msg += `*total participates: ${total}*\n\n`;
 		obj.map(a => msg += `*${a} :-*\n*_total votes: ${res[a].count}_*\n*_percentage: ${res[a].percentage}_*\n\n`);
-		return await message.reply(msg);
+		return await message.send(msg);
 	}
 	match = message.body.replace(/poll/gi, '').replace(/vote/gi, '').replace(PREFIX, '').trim();
 	if (!match || !match.split(/[,|;]/)) return await message.reply(`_*Example:* ${PREFIX}poll title |option1|option2|option3..._\n_*get a poll result:* ${PREFIX}poll_\n_reply to a poll message to get its result_`);
@@ -383,14 +385,251 @@ Module({
 }, async (message, match) => {
     if (!match) return message.reply('_Pdm Message\non/off');
     if (match != 'on' && match != 'off') return message.reply('pdm on');
-    const {pdm} = await groupDB(['pdm'], {jid: message.jid, content: {}}, 'get');
+    const {pdm} = await getVar(['pdm'], {jid: message.jid, content: {}}, 'get');
     if (match == 'on') {
         if (pdm == 'true') return message.reply('_Pdm Already activated_');
-        await groupDB(['pdm'], {jid: message.jid, content: 'true'}, 'set');
-        return await message.reply('_Pdm message activated_')
+        await getVar(['pdm'], {jid: message.jid, content: 'true'}, 'set');
+        return await message.reply('_Pdm Message Activated_')
     } else if (match == 'off') {
         if (pdm == 'false') return message.reply('_Pdm Already Deactivated_');
-        await groupDB(['pdm'], {jid: message.jid, content: 'false'}, 'set');
-        return await message.reply('_Pdm message deactivated_')
+        await getVar(['pdm'], {jid: message.jid, content: 'false'}, 'set');
+        return await message.reply('_Pdm Message Deactivated_')
     }
+});
+
+
+Module({
+    pattern: 'antidemote ?(.*)',
+    desc: 'demote actor and re-promote demoted person',
+    type: 'group',
+    onlyGroup: true,
+    fromMe: true
+}, async (message, match) => {
+    if (!match) return message.reply('antidemote on/off');
+    if (match != 'on' && match != 'off') return message.reply('antidemote on');
+    const {antidemote} = await getVar(['antidemote'], {jid: message.jid, content: {}}, 'get');
+    if (match == 'on') {
+    if (antidemote == 'true') return message.reply('_Antidemote Already Enabled');
+        await getVar(['antidemote'], {jid: message.jid, content: 'true'}, 'set');
+        return await message.reply('_Antidemote Successfully Enabled_')
+    } else if (match == 'off') {
+           if (antidemote == 'false') return message.reply('_Already Deactivated_');
+        await getVar(['antidemote'], {jid: message.jid, content: 'false'}, 'set');
+        return await message.reply('_Antidemote Successfully Disabled_')
+    }
+});
+
+
+
+Module({
+    pattern: 'antipromote ?(.*)',
+    desc: 'demote actor and re-promote demoted person',
+    type: 'group',
+    onlyGroup: true,
+    fromMe: true
+}, async (message, match) => {
+    if (!match) return message.reply('Antipromote on/off');
+    if (match != 'on' && match != 'off') return message.reply('antipromote on');
+    const {antipromote} = await getVar(['antipromote'], {jid: message.jid, content: {}}, 'get');
+    if (match == 'on') {
+        if (antipromote == 'true') return message.reply('_Antipromote Already Activated_');
+        await getVar(['antipromote'], {jid: message.jid, content: 'true'}, 'set');
+        return await message.reply('_Antipromote Successfully Enabled_')
+    } else if (match == 'off') {
+        if (antipromote == 'false') return message.reply('_Antipromote Already Deactivated_');
+        await getVar(['antipromote'], {jid: message.jid, content: 'false'}, 'set');
+        return await message.reply('_Antipromote Successfully Disabled_')
+    }
+});
+
+Module({
+    pattern: 'antibot ?(.*)',
+    desc: 'remove users who use bot',
+    type: "group",
+    onlyGroup: true,
+    fromMe: true 
+}, async (message, match) => {
+    if (!match) return await message.reply("_*antibot* on/off_\n_*antibot* action warn/kick/null_");
+    const {antibot} = await getVar(['antibot'], {jid: message.jid, content: {}}, 'get');
+    if(match.toLowerCase() == 'on') {
+    	const action = antibot && antibot.action ? antibot.action : 'null';
+        await getVar(['antibot'], {jid: message.jid, content: {status: 'true', action }}, 'set');
+        return await message.reply(`_antibot Activated with action null_\n_*antibot action* warn/kick/null for chaning actions_`)
+    } else if(match.toLowerCase() == 'off') {
+    	const action = antibot && antibot.action ? antibot.action : 'null';
+        await getVar(['antibot'], {jid: message.jid, content: {status: 'false', action }}, 'set')
+        return await message.reply(`_Antibot Disabled_`)
+    } else if(match.toLowerCase().match('action')) {
+    	const status = antibot && antibot.status ? antibot.status : 'false';
+        match = match.replace(/action/gi,'').trim();
+        if(!actions.includes(match)) return await message.reply('_action must be warn,kick or null_')
+        await getVar(['antibot'], {jid: message.jid, content: {status, action: match }}, 'set')
+        return await message.reply(`_AntiBot Action Updated_`);
+    }
+});
+
+
+
+
+Module({
+    pattern: 'antidelete ?(.*)',
+    desc: 'forward deleted messages',
+    type: 'group',
+    onlyGroup: true,
+    fromMe: true
+}, async (message, match) => {
+    if (!match) return message.reply('antidelete on/off');
+    if (match != 'on' && match != 'off') return message.reply('antidelete on');
+    const {antidelete} = await getVar(['antidelete'], {jid: message.jid, content: {}}, 'get');
+    if (match == 'on') {
+        if (antidelete == 'true') return message.reply('_Already activated_');
+        await getVar(['antidelete'], {jid: message.jid, content: 'true'}, 'set');
+        return await message.reply('_Antidelete Activated_')
+    } else if (match == 'off') {
+        if (antidelete == 'false') return message.reply('_Already Deactivated_');
+        await getVar(['antidelete'], {jid: message.jid, content: 'false'}, 'set');
+        return await message.reply('_Antidelete Deactivated_')
+    }
+});
+
+
+
+Module({
+    pattern: 'antifake ?(.*)',
+    desc: 'remove fake numbers',
+    fromMe: true,
+    type: 'group',
+    onlyGroup: true
+}, async (message, match) => {
+    if (!match) return await message.reply('_*antifake* 94,92_\n_*antifake* on/off_\n_*antifake* list_');
+    const {antifake} = await getVar(['antifake'], {jid: message.jid, content: {}}, 'get');
+    if(match.toLowerCase()=='get'){
+    if(!antifake || antifake.status == 'false' || !antifake.data) return await message.reply('_Not Found_');
+    return await message.reply(`_*activated restricted numbers*: ${antifake.data}_`);
+    } else if(match.toLowerCase() == 'on') {
+    	const data = antifake && antifake.data ? antifake.data : '';
+    	await getVar(['antifake'], {jid: message.jid, content: {status: 'true', data}}, 'set');
+        return await message.reply(`_Antifake Activated_`)
+    } else if(match.toLowerCase() == 'off') {
+        const data = antifake && antifake.data ? antifake.data : '';
+    	await getVar(['antifake'], {jid: message.jid, content: {status: 'false', data}}, 'set');
+    return await message.reply(`_Antifake Deactivated_`)
+    }
+    match = match.replace(/[^0-9,!]/g, '');
+    if(!match) return await message.reply('value must be number');
+    const status = antifake && antifake.status ? antifake.status : 'false';
+    await getVar(['antifake'], {jid: message.jid, content: {status, data: match}}, 'set');
+    return await message.reply(`_Antifake Updated_`);
+});
+
+
+
+
+
+Module({
+    pattern: 'antilink ?(.*)',
+    desc: 'remove users who use bot',
+    type: "group",
+    onlyGroup: true,
+    fromMe: true 
+}, async (message, match) => {
+    if (!match) return await message.reply("_*antilink* on/off_\n_*antilink* action warn/kick/null_");
+    const {antilink} = await getVar(['antilink'], {jid: message.jid, content: {}}, 'get');
+    if(match.toLowerCase() == 'on') {
+    	const action = antilink && antilink.action ? antilink.action : 'null';
+        await getVar(['antilink'], {jid: message.jid, content: {status: 'true', action }}, 'set');
+        return await message.reply(`_antilink Activated with action null_\n_*antilink action* warn/kick/null for chaning actions_`)
+    } else if(match.toLowerCase() == 'off') {
+    	const action = antilink && antilink.action ? antilink.action : 'null';
+        await getVar(['antilink'], {jid: message.jid, content: {status: 'false', action }}, 'set')
+        return await message.reply(`_Antilink deactivated_`)
+    } else if(match.toLowerCase().match('action')) {
+    	const status = antilink && antilink.status ? antilink.status : 'false';
+        match = match.replace(/action/gi,'').trim();
+        if(!actions.includes(match)) return await message.reply('_action must be warn,kick or null_')
+        await getVar(['antilink'], {jid: message.jid, content: {status, action: match }}, 'set')
+        return await message.reply(`_AntiLink Action Updated_`);
+    }
+});
+
+
+
+Module({
+    pattern: 'antiword ?(.*)',
+    desc: 'remove users who use restricted words',
+    type: "group",
+    onlyGroup: true,
+    fromMe: true 
+}, async (message, match) => {
+    if (!match) return await message.reply("_*antiword* on/off_\n_*antiword* action warn/kick/null_");
+    const {antiword} = await getVar(['antiword'], {jid: message.jid, content: {}}, 'get');
+    if(match.toLowerCase() == 'get') {
+    	const status = antiword && antiword.status == 'true' ? true : false
+        if(!status  || !antiword.word) return await message.reply('_Not Found_');
+        return await message.reply(`_*activated antiwords*: ${antiword.word}_`);
+    } else if(match.toLowerCase() == 'on') {
+    	const action = antiword && antiword.action ? antiword.action : 'null';
+        const word = antiword && antiword.word ? antiword.word : undefined;
+        await getVar(['antiword'], {jid: message.jid, content: {status: 'true', action, word}}, 'set');
+        return await message.reply(`_antiword Activated with action null_\n_*antiword action* warn/kick/null for chaning actions_`)
+    } else if(match.toLowerCase() == 'off') {
+    	const action = antiword && antiword.action ? antiword.action : 'null';
+        const word = antiword && antiword.word ? antiword.word : undefined;
+        await getVar(['antiword'], {jid: message.jid, content: {status: 'false', action,word }}, 'set')
+        return await message.reply(`_antiword deactivated_`)
+    } else if(match.toLowerCase().match('action')) {
+    	const status = antiword && antiword.status ? antiword.status : 'false';
+        match = match.replace(/action/gi,'').trim();
+        if(!actions.includes(match)) return await message.reply('_action must be warn,kick or null_')
+        await getVar(['antiword'], {jid: message.jid, content: {status, action: match }}, 'set')
+        return await message.reply(`_antiword Action Updated_`);
+    } else {
+    	if(!match) return await message.reply('_*Example:* antiword 🏳️‍🌈, gay, nigga_');
+    	const status = antiword && antiword.status ? antiword.status : 'false';
+        const action = antiword && antiword.action ? antiword.action : 'null';
+        await getVar(['antiword'], {jid: message.jid, content: {status, action,word: match}}, 'set')
+        return await message.reply(`_Antiwords Updated_`);
+    }
+});
+
+
+Module({
+        pattern: 'bcgroup ?(.*)',
+        fromMe: true,
+        desc: 'broadcast to all user in specified group',
+        type: 'group',
+        onlyGroup: true
+}, async (message, match) => {
+if(!message.reply_message.i) return await message.reply("_Reply to a Message_");
+return await broadcast(message, match, "group");
+});
+
+Module({
+        pattern: 'bcall ?(.*)',
+        fromMe: true,
+        desc: 'broadcast to all users',
+        type: 'user'
+}, async (message, match) => {
+if(!message.reply_message.i) return await message.reply("_Reply to a Message_*");
+return await broadcast(message, match, "all");
+});
+
+Module({
+        pattern: 'bcpm ?(.*)',
+        fromMe: true,
+        desc: 'broadcast to all your pm messages',
+        type: 'user'
+        }, async (message, match) => {
+if(!message.reply_message.i) return await message.reply("_Reply to a Message_");
+return await broadcast(message, match, "pm");
+});
+
+Module({
+        pattern: 'bcongroup ?(.*)',
+        fromMe: true,
+        desc: 'broadcast to all groups',
+        type: 'groupr'
+        }, async (message, match) => {
+if(!message.reply_message.i) return await message.reply("_Reply to a Message_");
+return await broadcast(message, match, "allgroup");
 });
