@@ -2,7 +2,7 @@
   "name": "Deploy",
   "description": "whatsapp md bot build with nodejs",
   "repository": "https://github.com/Afx-Abu/Abu-MD",
-  "logo": "https://pbs.twimg.com/media/FO7fojOakAAyYgt?format=jpg&name=900x900",
+  "logo": "https://i.imgur.com/o3WP9EK.jpeg",
   "keywords": ["nodejs", "bot", "whatsapp bot", "whatsapp automation", "multi device"],
   "stack": "container",
   "env": {
@@ -21,15 +21,15 @@
       "required": true,
       "value": ""
     },
-    "WORKTYPE": {
+    "MODE": {
       "description": "enter bot mode must be public/private",
       "required": true,
-      "value": "private"
+      "value": "public"
     },
     "BOT_INFO": {
       "description": "baasic bot configration",
       "required": true,
-      "value": "Afx-Abu;Abu-MD;https://i.imgur.com/DyLAuEh.jpg"
+      "value": "Afx-Abu;Abu-MD;https://i.imgur.com/o3WP9EK.jpeg"
     },
     "PREFIX": {
       "description": "bot preifx  ., [.,!], false",
@@ -46,7 +46,7 @@
       "required": true,
       "value": "Jsl;Abu-MD"
     },
-    "PERSONAL_MESSAGE": {
+    "PM_MESSAGE": {
       "description": "personal greetings for first message ",
       "required": true,
       "value": "this is a bot, owner is bussy with something"
@@ -66,7 +66,7 @@
       "required": true,
       "value": "null"
     },
-    "AJOIN": {
+    "GPJOIN": {
       "description": "automatically join to all groups",
       "required": true,
       "value": "false"
