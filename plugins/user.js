@@ -1,6 +1,8 @@
 const {
     Module,
     getVar,
+    commands,
+    sleep,
     lang
 } = require("../lib")
 
@@ -42,3 +44,41 @@ Module({
     return await message.reply(cmds)
 });
       
+
+
+Module({
+        pattern: 'toggle ?(.*)',
+        fromMe: true,
+        desc: 'command freezer',
+        type: 'misc',
+}, async (message, match) => {
+        if (match == 'list') {
+                const {toggle} = await getVar(['toggle'], {content:{}},'get');
+                let list = lang.TOGGLE.LIST
+                if (!Object.keys(toggle)[0]) return await message.reply('_Not Found_');
+                let n = 1;
+                for(const t in toggle) {
+                        list += `${n++}  ${t}\n`;               
+                }
+                return await message.reply(list)
+        }
+        let [cmd, tog] = match.split(' '), isIn = false;
+        if (!cmd || (tog != 'off' && tog != 'on')) return await message.reply(lang.TOGGLE.METHODE.format("toggle"))
+        commands.map((c) => {
+                if (c.pattern && c.pattern.replace(/[^a-zA-Z0-9,+-]/g, "") == cmd) {
+                        isIn = true
+                }
+        });
+        await sleep(250)
+        tog = tog == 'on' ? 'true' : 'false';
+        if (!isIn) return await message.reply(lang.TOGGLE.ERROR);
+        if (cmd == 'toggle') return await message.reply(lang.TOGGLE.ERROR_KILL)
+        if(tog == 'false') {
+                await getVar(['toggle'], {content:{[cmd]: tog}},'add');
+                return await message.reply(`_${cmd} Enabled._`)
+        } else if(tog == 'true') {
+                await getVar(['toggle'], {content:{id: cmd}},'delete');
+                return await message.reply(`_${cmd} Disabled._`)
+        }     
+
+})
