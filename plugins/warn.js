@@ -1,6 +1,6 @@
 const {
     Module,
-    groupDB,
+    getWarn,
     lang,
     isAdmin,
     isBotAdmin,
@@ -19,7 +19,7 @@ Module({
     if (match == 'get') {
         const {
             warn
-        } = await groupDB(['warn'], {
+        } = await getWarn(['warn'], {
             jid: message.jid,
             content: {}
         }, 'get');
@@ -33,13 +33,13 @@ Module({
         if (!message.reply_message.sender) return await message.reply(lang.BASE.NEED.format('user'));
         const {
             warn
-        } = await groupDB(['warn'], {
+        } = await getWarn(['warn'], {
             jid: message.jid,
             content: {}
         }, 'get');
         if (!Object.keys(warn)[0]) return await message.reply('_Not Found!_');
         if (!Object.keys(warn).includes(message.reply_message.number)) return await message.reply('_User Not Found!_');
-        await groupDB(['warn'], {
+        await getWarn(['warn'], {
             jid: message.jid,
             content: {
                 id: message.reply_message.number
@@ -56,12 +56,12 @@ Module({
         const reason = match || 'warning';
         const {
             warn
-        } = await groupDB(['warn'], {
+        } = await getWarn(['warn'], {
             jid: message.jid,
             content: {}
         }, 'get');
         const count = Object.keys(warn).includes(message.reply_message.number) ? Number(warn[message.reply_message.number].count) + 1 : 1;
-        await groupDB(['warn'], {
+        await getWarn(['warn'], {
                 jid: message.jid,
                 content: {
                     [message.reply_message.number]: {
@@ -81,7 +81,7 @@ Module({
             mentions: [message.reply_message.sender], quoted: message
         })
         if (remains <= 0) {
-            await groupDB(['warn'], {
+            await getWarn(['warn'], {
                 jid: message.jid,
                 content: {
                     id: message.reply_message.number
