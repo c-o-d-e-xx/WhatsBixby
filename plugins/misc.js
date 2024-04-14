@@ -11,15 +11,6 @@ const {
 } = require('../lib');
 const fs = require('fs');
 
-Module({
-    pattern: 'url',
-    desc: 'converting urls',
-    fromMe: isPublic,
-    type: "converter"
-}, async (message, match) => {
-    if (!message.isMedia) return message.reply(lang.BASE.NEED.format('image/sticker/video/audio'));
-    return await sendUrl(message, message.client);
-});
 
 Module({
     pattern: 'take',
@@ -70,4 +61,15 @@ Module({
         });
     }
 })
+
+
+Module({
+    pattern: 'url',
+    desc: 'converting urls',
+    fromMe: isPublic,
+    type: "converter"
+}, async (message, match) => {
+    if (!message.isMedia) return message.reply(lang.BASE.NEED.format('image/sticker/video/audio'));
+    return await sendUrl(message, message.client);
+});
                   
