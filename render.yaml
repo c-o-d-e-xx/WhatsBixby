@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: Abu-MD
+    env: node
+    branch: main
+    repo: https://github.com/Afx-Abu/Abu-MD.git
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    autoDeploy: false
+    envVars:
+      - key: SESSION_ID
+        sync: false
+
