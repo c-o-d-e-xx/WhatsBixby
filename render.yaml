@@ -9,6 +9,6 @@ services:
     plan: free
     autoDeploy: false
     envVars:
-      - key: SESSION_ID
+      - key: SHABAN-SOBX-MD~yY8HHawQ#AcHRnosPzNOsGQlWu9GlGGEU0IJEQi4lZxp3A8n2S44
         sync: false
 
