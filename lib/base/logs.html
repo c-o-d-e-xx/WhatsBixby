@@ -1,0 +1,159 @@
+/* Copyright (C) 2025 Codex.
+Licensed under the MIT License;
+you may not use this file except in compliance with the License.
+Codex - Ziyan
+*/
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worker Logs Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #555;
+        }
+
+        header button {
+            background: #007BFF;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        header button:hover {
+            background: #0056b3;
+        }
+
+        #logsContainer {
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            background: #fafafa;
+        }
+
+        .log-entry {
+            margin-bottom: 10px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-left: 4px solid #007BFF;
+            border-radius: 4px;
+        }
+
+        .log-entry .timestamp {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .log-entry .data {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .placeholder {
+            text-align: center;
+            color: #999;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Worker Logs Viewer</h1>
+            <button id="refreshBtn">Refresh Logs</button>
+        </header>
+        <section id="logsContainer">
+            <p class="placeholder">Logs will appear here...</p>
+        </section>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const logsContainer = document.getElementById("logsContainer");
+            const refreshBtn = document.getElementById("refreshBtn");
+
+            async function fetchLogs() {
+                try {
+                    // Fetch logs from the /logs endpoint
+                    const response = await fetch('/logs');
+                    const logs = await response.json();
+
+                    // Clear existing logs
+                    logsContainer.innerHTML = "";
+
+                    if (Object.keys(logs).length === 0) {
+                        logsContainer.innerHTML = '<p class="placeholder">No logs available.</p>';
+                        return;
+                    }
+
+                    // Display logs
+                    for (const [file, logEntries] of Object.entries(logs)) {
+                        const fileHeader = document.createElement("h3");
+                        fileHeader.textContent = `Logs for: ${file}`;
+                        logsContainer.appendChild(fileHeader);
+
+                        logEntries.forEach(log => {
+                            const logEntry = document.createElement("div");
+                            logEntry.className = "log-entry";
+
+                            const timestamp = document.createElement("div");
+                            timestamp.className = "timestamp";
+                            timestamp.textContent = `Time: ${log.timestamp}`;
+
+                            const data = document.createElement("div");
+                            data.className = "data";
+                            data.textContent = `Data: ${JSON.stringify(log.data)}`;
+
+                            logEntry.appendChild(timestamp);
+                            logEntry.appendChild(data);
+                            logsContainer.appendChild(logEntry);
+                        });
+                    }
+                } catch (error) {
+                    console.error("Error fetching logs:", error);
+                    logsContainer.innerHTML = '<p class="placeholder">Failed to load logs. Please try again.</p>';
+                }
+            }
+
+            // Add click event to refresh button
+            refreshBtn.addEventListener("click", fetchLogs);
+
+            // Fetch logs on page load
+            fetchLogs();
+        });
+    </script>
+</body>
+</html>

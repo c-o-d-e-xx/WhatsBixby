@@ -1,0 +1,68 @@
+{
+  "name": "WhatsBixby",
+  "version": "2.0.1",
+  "description": "Whatsapp Bot",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "main": "index.js"
+  },
+  "engines": {
+    "node": "22.11.0",
+    "npm": "10.9.1"
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "1.1.0",
+    "@ffprobe-installer/ffprobe": "2.1.2",
+    "@google/generative-ai": "0.21.0",
+    "@whiskeysockets/baileys": "6.7.9",
+    "@vitalets/google-translate-api": "9.2.0",
+    "acrcloud": "1.4.0",
+    "aes256": "1.1.0",
+    "archiver": "7.0.1",
+    "axios": "1.7.8",
+    "bitly": "7.1.2",
+    "browser-id3-writer": "4.4.0",
+    "cheerio": "1.0.0",
+    "dotenv": "16.4.5",
+    "express": "4.21.1",
+    "file-type": "16.5.3",
+    "fluent-ffmpeg": "2.1.3",
+    "form-data": "4.0.1",
+    "google-tts-api": "2.0.2",
+    "got": "11.8.3",
+    "heroku-client": "3.1.0",
+    "jimp": "0.16.1",
+    "jsdom": "25.0.1",
+    "jsqr": "1.4.0",
+    "jszip": "3.10.1",
+    "node-webpmux": "3.2.0",
+    "openai": "4.73.1",
+    "pino": "9.5.0",
+    "pm2": "5.4.3",
+    "qrcode": "1.5.4",
+    "qrcode-terminal": "0.12.0",
+    "sequelize": "6.37.5",
+    "simple-git": "3.27.0",
+    "sqlite3": "5.1.7",
+    "stream-buffers": "3.0.3",
+    "ytsr": "3.8.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/c-o-d-e-xx/WhatsBixby.git"
+  },
+  "keywords": [
+    "bot",
+    "whatsapp"
+  ],
+  "author": "Codex",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/c-o-d-e-xx/WhatsBixby/issues"
+  },
+  "homepage": "https://github.com/c-o-d-e-xx/WhatsBixby#readme"
+}

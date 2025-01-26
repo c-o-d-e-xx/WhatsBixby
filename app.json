@@ -1,0 +1,92 @@
+{
+	"name": "WhatsAppBot-MD",
+	"description": "Fully Costamisable Bot by, Alien-Alfa.",
+	"repository": "https://github.com/Alien-Alfa/WhatsAppBot-MD",
+	"website": "https://small-sharp-tool.com/",
+	"logo": "https://avatars.githubusercontent.com/u/64305844?v=4",
+	"keywords": ["multi-device","WhatsApp Bot"],
+	"env": { 
+    "ANTI_LINK": {
+      "description": "true/false",
+      "required": false
+    },
+    "ANTILINK_ACTION": {
+      "description": "kick",
+      "required": false
+    },
+    "WORK_TYPE": {
+      "description": "Public or Private?",
+      "required": true,
+      "value": "private"
+    },
+    "SESSION_ID": {
+      "description": "Your Session ID",
+      "required": false
+    },
+    "HANDLERS": {
+      "description": "prefix for commands, enter false for no prefix",
+      "required": true,
+      "value": "."
+    },
+    "LOGS": {
+      "description": "need to show message logs ?",
+      "required": true,
+      "value": "false"
+    },
+    "PACKNAME": {
+      "description": "Sticker Packname",
+      "required": false
+    },
+    "GOODBYE_MSG": {
+      "description": "goodbye Message",
+      "required": false,
+      "value": "@user Left The Group"
+    },
+    "WELCOME_MSG": {
+      "description": "Welcome Message",
+      "required": false,
+      "value": "Hi @user Welcome to @gname"
+    },
+    "AUTHOR": {
+      "description": "Sticker Pack AUTHOR",
+      "required": false
+    },
+    "SUDO": {
+      "description": "sudo numbers with country code seperate with , for multiple numbers",
+      "required": false
+    },
+    "HEROKU_APP_NAME": {
+      "description": "Heroku app name, same as above entered",
+      "required": true
+    },
+    "HEROKU_API_KEY": {
+      "description": "Heroku account api key, https://dashboard.heroku.com/account",
+      "required": true
+    },
+    "DELETED_LOG": {
+      "description": "Do you want to save deleted messages?",
+      "required": true,
+      "value": "true"
+    },
+    "DELETED_LOG_CHAT": {
+        "description": "jid of the chat where to save the messages",
+        "required": false
+      },
+    "SESSION": {
+      "description": "If you dont have the valid SESSION_ID, Paste the contents of creds.json file here",
+      "required": false
+    },
+    "HEROKU": {
+      "description": "DEPLOYING ON HEROKU?",
+      "required": true,
+      "value": "true"
+    }
+  },
+  "buildpacks": [{ "url": "https://github.com/heroku/heroku-buildpack-nodejs#latest" }],
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  }
+}
