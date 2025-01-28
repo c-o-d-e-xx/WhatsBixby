@@ -3,7 +3,7 @@ services:
     name: WhatsBixby
     env: node
     build:
-      dockerfile: lib/Dockerfile
+      dockerfilePath: lib/Dockerfile
     envVars:
       - key: NODE_ENV
         value: production
