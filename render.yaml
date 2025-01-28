@@ -4,11 +4,10 @@ services:
     repo: https://github.com/c-o-d-e-xx/WhatsBixby.git
     branch: master
     runtime: docker
-    dockerfile: lib/Dockerfile
+    dockerfilePath: lib/Dockerfile
     autoDeploy: true
     envVars:
       - key: SESSION_ID
         sync: false
         required: true
-    resources:
-      plan: free
+    plan: free
