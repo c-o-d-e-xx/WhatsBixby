@@ -1,10 +1,13 @@
 services:
   - type: web
     name: WhatsBixby
+    repo: https://github.com/c-o-d-e-xx/WhatsBixby.git
+    branch: master
     env: docker
-    dockerfilePath: ./lib/Dockerfile
-    region: Frankfurt
+    dockerfilePath: lib/Dockerfile
     plan: free
+    autoDeploy: true
     envVars:
       - key: SESSION_ID
-        value: ""
+        sync: false
+        required: true
