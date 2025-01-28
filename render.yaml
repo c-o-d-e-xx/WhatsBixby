@@ -2,8 +2,7 @@ services:
   - type: web
     name: WhatsBixby
     env: node
-    build:
-      dockerfilePath: ./lib/Dockerfile  # Path to your Dockerfile
+    dockerfilePath: ./lib/Dockerfile
     envVars:
       - key: NODE_ENV
         value: production
