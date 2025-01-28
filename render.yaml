@@ -1,14 +1,10 @@
 services:
   - type: web
     name: WhatsBixby
-    env: node
+    env: docker
     dockerfilePath: ./lib/Dockerfile
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: PORT
-        value: 8000
+    region: Frankfurt
     plan: free
-    region: oregon
-    numInstances: 1
-    autoDeploy: yes
+    envVars:
+      - key: SESSION_ID
+        value: ""
