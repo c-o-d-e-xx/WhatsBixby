@@ -3,11 +3,12 @@ services:
     name: WhatsBixby
     repo: https://github.com/c-o-d-e-xx/WhatsBixby.git
     branch: master
-    env: docker
-    dockerfilePath: lib/Dockerfile
-    plan: free
+    runtime: docker
+    dockerfile: lib/Dockerfile
     autoDeploy: true
     envVars:
       - key: SESSION_ID
         sync: false
         required: true
+    resources:
+      plan: free
