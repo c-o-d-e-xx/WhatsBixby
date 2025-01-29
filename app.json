@@ -1,9 +1,9 @@
 {
-	"name": "WhatsAppBot-MD",
-	"description": "Fully Costamisable Bot by, Alien-Alfa.",
-	"repository": "https://github.com/Alien-Alfa/WhatsAppBot-MD",
+	"name": "WhasBixby",
+	"description": "Advanced WhatsApp Md Bot.",
+	"repository": "https://github.com/ c-o-d-e-xx/WhatsBixby",
 	"website": "https://small-sharp-tool.com/",
-	"logo": "https://avatars.githubusercontent.com/u/64305844?v=4",
+	"logo": "",
 	"keywords": ["multi-device","WhatsApp Bot"],
 	"env": { 
     "ANTI_LINK": {
