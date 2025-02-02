@@ -6,11 +6,10 @@ Codex - Ziyan
 
 const got = require("got");
 const Heroku = require("heroku-client");
-const { Bixby, isPrivate } = require("../lib/");
+const { Bixby, isPrivate, secondsToDHMS } = require("../lib/");
 const Config = require("../config");
 const heroku = new Heroku({ token: Config.HEROKU_API_KEY });
 const baseURI = "/apps/" + Config.HEROKU_APP_NAME;
-const { secondsToDHMS } = require("../lib/functions");
 const { delay } = require("@whiskeysockets/baileys");
 
 Bixby(
