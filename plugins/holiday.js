@@ -1,10 +1,5 @@
-/* Copyright (C) 2025 Codex.
-Licensed under the MIT License;
-you may not use this file except in compliance with the License.
-Codex - Ziyan
-*/
-
 const { Bixby, isPrivate } = require("../lib");
+const { EncodeInput } = require("../lib/functions");
 const { BASE_URL, API_KEY } = require("../config");
 const axios = require("axios");
 
@@ -24,18 +19,22 @@ async (m, match) => {
     }
 
     try {
-        const response = await axios.get(`${BASE_URL}holiday?country=${country}&year=${year}&apikey=${API_KEY}`);
+        const encodedCountry = await EncodeInput(country, { toUpperCase: true });
+        const encodedYear = await EncodeInput(year);
+
+        const response = await axios.get(`${BASE_URL}holiday?country=${encodedCountry}&year=${encodedYear}&apikey=${API_KEY}`);
+        
         const holidays = response.data;
 
         if (!holidays || holidays.length === 0) {
-            return await m.reply(`No holidays found for ${country.toUpperCase()} in ${year}.`);
+            return await m.reply(`No holidays found for ${encodedCountry} in ${encodedYear}.`);
         }
 
         const formattedHolidays = holidays.map(holiday => {
             return `🌟 *${holiday.name}*\n📅 Date: ${holiday.date}\n📆 Observed: ${holiday.observed}\n🔓 Public: ${holiday.public ? "Yes" : "No"}\n`;
         }).join("\n---\n");
 
-        await m.reply(`Holidays in ${country.toUpperCase()} (${year}):\n\n${formattedHolidays}`);
+        await m.reply(`Holidays in ${encodedCountry} (${encodedYear}):\n\n${formattedHolidays}`);
     } catch (error) {
         console.error(error);
         await m.reply("Failed to fetch holiday data. Please try again later.");

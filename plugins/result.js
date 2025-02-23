@@ -1,10 +1,4 @@
-/* Copyright (C) 2025 Codex.
-Licensed under the MIT License;
-you may not use this file except in compliance with the License.
-Codex - Ziyan
-*/
-
-const { Bixby } = require("../lib/");
+const { Bixby } = require("../lib");
 const axios = require("axios");
 
 Bixby( 

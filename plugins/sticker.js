@@ -1,11 +1,5 @@
-/* Copyright (C) 2025 Codex.
-Licensed under the MIT License;
-you may not use this file except in compliance with the License.
-Codex - Ziyan
-*/
-
-const { Bixby, fromMe, isPrivate, toAudio, getBuffer } = require("../lib/");
-const { webp2mp4, textToImg } = require("../lib/functions");
+const { Bixby, fromMe, isPrivate, toAudio, getBuffer, toVideo } = require("../lib");
+const { webp2mp4, textToImg } = require("../lib/function");
 const {PACKNAME, AUTHOR, BASE_URL, API_KEY } = require("../config");
 const axios = require("axios");
 
@@ -104,24 +98,15 @@ Bixby(
     type: "converter",
   },
   async (message, match, m) => {
-    if (
-      !(
-        message.reply_message.video ||
-        message.reply_message.image ||
-        message.reply_message.text
-      )
-    )
+    if (!message.reply_message&& (!message.reply_message.video || !message.reply_message.sticker || !message.reply_message.text))
       return await message.reply("_Reply to photo/video/text_");
+    var buff;
     if (message.reply_message.text) {
-      let buff = await textToImg(message.reply_message.text);
-      return await message.sendMessage(
-        message.jid,
-        buff,
-        { mimetype: "image/webp" },
-        "stickerMessage"
-      );
+      buff = await textToImg(message.reply_message.text);
+    } else {
+      buff = await m.quoted.download();
     }
-    let buff = await m.quoted.download();
+
     message.sendMessage(
       message.jid,
       buff,
@@ -199,18 +184,32 @@ Bixby(
     type: "downloader",
   },
   async (message, match, m) => {
-    if (
-      !message.reply_message.video ||
-      !message.reply_message.sticker ||
-      !message.reply_message.audio
-    )
+    // Check if the message is a reply and contains a video, sticker, or audio
+    if (!message.reply_message || (!message.reply_message.video && !message.reply_message.sticker && !message.reply_message.audio)) {
       return await message.reply("_Reply to a sticker/audio/video_");
-    let buff = await m.quoted.download();
-    if (message.reply_message.sticker) {
-      buff = await webp2mp4(buff);
-    } else {
-      buff = await toAudio(buff, "mp4");
     }
+
+    // Download the media file
+    let buff = await m.quoted.download();
+
+    // If the input is already an MP4, send it directly
+    if (message.reply_message.video && message.reply_message.mimetype === "video/mp4") {
+      return await message.sendMessage(
+        message.jid,
+        buff,
+        { mimetype: "video/mp4" },
+        "video"
+      );
+    }
+
+    // Convert the media to MP4 if it's not already in MP4 format
+    if (message.reply_message.sticker) {
+      buff = await webp2mp4(buff); // Convert sticker to MP4
+    } else {
+      buff = await toVideo(buff, "mp4"); // Convert video/audio to MP4
+    }
+
+    // Send the converted media
     return await message.sendMessage(
       message.jid,
       buff,

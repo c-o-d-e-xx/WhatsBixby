@@ -1,9 +1,9 @@
 {
-	"name": "WhasBixby",
-	"description": "Advanced WhatsApp Md Bot.",
-	"repository": "https://github.com/ c-o-d-e-xx/WhatsBixby",
+	"name": "WhatsBixby",
+	"description": Advanced WhatsApp Bot By Codex",
+	"repository": "https://github.com/c-o-d-e-xx/WhatsBixby",
 	"website": "https://small-sharp-tool.com/",
-	"logo": "",
+	"logo": "https://avatars.githubusercontent.com/u/100409086?v=4",
 	"keywords": ["multi-device","WhatsApp Bot"],
 	"env": { 
     "ANTI_LINK": {

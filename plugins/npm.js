@@ -1,9 +1,3 @@
-/* Copyright (C) 2025 Codex.
-Licensed under the MIT License;
-you may not use this file except in compliance with the License.
-Codex - Ziyan
-*/
-
 const { Bixby, isPrivate } = require("../lib/");
 const { BASE_URL, API_KEY } = require("../config");
 const axios = require('axios')

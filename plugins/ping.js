@@ -1,9 +1,3 @@
-/* Copyright (C) 2025 Codex.
-Licensed under the MIT License;
-you may not use this file except in compliance with the License.
-Codex - Ziyan
-*/
-
 const {
   Bixby,
   fromMe,
@@ -98,6 +92,7 @@ Bixby({
       }
   }
 );
+
 Bixby({
       pattern: "uptime",
       fromMe: isPrivate,
@@ -141,6 +136,9 @@ Bixby({
   }
 );
 
+// Thanks to ❤ Ragnork ❤ for this code
+
+
 Bixby({
     pattern: 'onwa ?(.*)',
     fromMe: true,
@@ -156,6 +154,8 @@ Bixby({
         edit: x
     });
 }));
+
+
 
 
 async function processOnwa(client, numberPattern) {

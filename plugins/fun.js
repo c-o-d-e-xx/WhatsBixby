@@ -1,9 +1,3 @@
-/* Copyright (C) 2025 Codex.
-Licensed under the MIT License;
-you may not use this file except in compliance with the License.
-Codex - Ziyan
-*/
-
 const { Bixby, isPrivate, XKCDComic, getJson } = require("../lib");
 const axios = require("axios");
 

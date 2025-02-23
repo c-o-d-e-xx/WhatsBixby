@@ -1,11 +1,5 @@
-/* Copyright (C) 2025 Codex.
-Licensed under the MIT License;
-you may not use this file except in compliance with the License.
-Codex - Ziyan
-*/
-
 const { Bixby, isPrivate } = require("../lib/");
-const { eBinary, dBinary, octalToText, textToOctal } = require("../lib/functions/");
+const { eBinary, dBinary, octalToText, textToOctal } = require("../lib/functions");
 
 Bixby({
        pattern: "ebinary",
