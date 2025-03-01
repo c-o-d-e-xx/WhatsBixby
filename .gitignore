@@ -1,4 +1,6 @@
 node_modules
 package-lock.json
 lib/temp/**/*
-!lib/temp/.gitkeep
+!lib/temp/
+!lib/temp/**/
+!lib/temp/**/.gitkeep
