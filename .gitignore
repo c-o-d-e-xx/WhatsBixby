@@ -1,6 +1,5 @@
 node_modules
 package-lock.json
-lib/temp/**/*
-!lib/temp/
-!lib/temp/**/
-!lib/temp/**/.gitkeep
+lib/temp/session/*   # Ignore all files inside lib/temp/session/
+!lib/temp/session/   # Keep the session folder
+!lib/temp/session/.gitkeep   # Keep .gitkeep to preserve empty folder
