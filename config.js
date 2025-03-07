@@ -24,7 +24,7 @@ module.exports = {
   HEROKU_APP_NAME: process.env.HEROKU_APP_NAME || "",
   HEROKU_API_KEY: process.env.HEROKU_API_KEY || "",
   OWNER_NAME: process.env.OWNER_NAME || "𝙕𝞘𝙔𝞓𝞜",
-  HEROKU: toBool(process.env.HEROKU) || false,
+  HEROKU: toBool(process.env.HEROKU) || "true",
   BOT_NAME: process.env.BOT_NAME || "𝙒𝞖𝞓𝙏𝙎𝞑𝞘𝞦𝞑𝙔",
   WORK_TYPE: process.env.WORK_TYPE || "private",
   SESSION_URL: process.env.SESSION_URL || "",
