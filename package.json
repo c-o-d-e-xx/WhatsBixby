@@ -7,9 +7,10 @@
     "start": "node index.js"
   },
   "engines": {
-    "node": "22.16.0",
-    "npm": "11.4.2"
-  },
+  "node": "22.16.0",
+  "npm": "11.4.2"
+},
+"engineStrict": true,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/c-o-d-e-xx/WhatsBixby"
