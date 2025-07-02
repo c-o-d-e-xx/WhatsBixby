@@ -14,10 +14,10 @@ const {
 if (existsSync('config.env')) require('dotenv').config({
 	path: './config.env'
 })
-process.env.NODE_OPTIONS = '--max_old_space_size=2560' //2.5
+process.env.NODE_OPTIONS = '--max_old_space_size=2560'
 const DB_URL = process.env.DATABASE_URL || '';
 module.exports = {
-	SESSION_ID: process.env.SESSION_ID || '', //your ssid to run bot
+	SESSION_ID: process.env.SESSION_ID || '',
 	HEROKU: {
 		API_KEY: process.env.HEROKU_API_KEY,
 		APP_NAME: process.env.HEROKU_APP_NAME
@@ -41,15 +41,15 @@ module.exports = {
 	CHATBOT: process.env.CHATBOT || "false",
 	REACT: process.env.REACT || "false", //true, command, emoji
 	WARNCOUND: process.env.WARNCOUND || 5,
-	BOT_INFO: process.env.BOT_INFO || "INRL-BOT-MD;INRL;https://raw.githubusercontent.com/c-o-d-e-xx/c-o-d-e-xx/refs/heads/main/img/bixby2.jpeg",
+	BOT_INFO: process.env.BOT_INFO || "WHATSBIXBY;Codex;https://raw.githubusercontent.com/c-o-d-e-xx/c-o-d-e-xx/refs/heads/main/img/bixby2.jpeg",
 	WORKTYPE: process.env.WORKTYPE || "public",
 	PREFIX: process.env.PREFIX || "[.,!]", //both  .  and [.] equal, for multi prefix we use [] this
 	PERSONAL_MESSAGE: process.env.PERSONAL_MESSAGE || "null",
 	BOT_PRESENCE: process.env.BOT_PRESENCE || "unavailable",
-	AUDIO_DATA: process.env.AUDIO_DATA || "INRL-BOT-MD;INRL;https://raw.githubusercontent.com/c-o-d-e-xx/c-o-d-e-xx/refs/heads/main/img/bixby2.jpeg",
-	STICKER_DATA: process.env.STICKER_DATA || "inrl;inrl",
+	AUDIO_DATA: process.env.AUDIO_DATA || "WHATSBIXBY;Codex;https://raw.githubusercontent.com/c-o-d-e-xx/c-o-d-e-xx/refs/heads/main/img/bixby2.jpeg",
+	STICKER_DATA: process.env.STICKER_DATA || "WhatsBixby;Codex",
 	LIST_TYPE: process.env.LIST_TYPE || 'poll', //list, reaction 
-	LINK_PREVIEW: process.env.LINK_PREVIEW || 'INRL;Bot;https://raw.githubusercontent.com/c-o-d-e-xx/c-o-d-e-xx/refs/heads/main/img/bixby2.jpeg', //you can use "false" alslo
+	LINK_PREVIEW: process.env.LINK_PREVIEW || 'WhatsBixby;Codex;https://raw.githubusercontent.com/c-o-d-e-xx/c-o-d-e-xx/refs/heads/main/img/bixby2.jpeg', //you can use "false" alslo
 	API_TYPE: process.env.API_TYPE || 'all', //unique
 	BRAINSHOP: process.env.BRAINSHOP || '172372,nbjE0YAlyw3cpoMl',
 	SUDO: process.env.SUDO || "919446072492",
