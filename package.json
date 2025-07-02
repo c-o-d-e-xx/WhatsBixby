@@ -1,0 +1,49 @@
+{
+  "name": "WhatsBixby",
+  "version": "4.1.4",
+  "description": "WhatsApp bot made with nodejs and baileys",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": "22.16.0",
+    "npm": "11.4.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/c-o-d-e-xx/WhatsBixby"
+  },
+  "dependencies": {
+    "@adiwajshing/keyed-db": "^0.2.4",
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "baileys": "6.7.18",
+    "node-cron":"3.0.3",
+    "awesome-phonenumber": "^2.64.0",
+    "axios": "1.6.8",
+    "cheerio": "^1.0.0-rc.10",
+    "child_process": "^1.0.2",
+    "dotenv": "^16.0.2",
+    "express": "4.21.2",
+    "file-type": "^16.5.3",
+    "fluent-ffmpeg": "^2.1.2",
+    "form-data": "^4.0.0",
+    "fs": "^0.0.1-security",
+    "google-tts-api": "^2.0.2",
+    "heroku-client": "^3.1.0",
+    "i-nrl": "0.0.3",
+    "jimp": "^0.16.1",
+    "moment-timezone": "^0.5.34",
+    "node-webpmux": "^3.1.1",
+    "os": "^0.1.2",
+    "path": "^0.12.7",
+    "pg": "^8.11.3",
+    "pino": "^7.9.2",
+    "qrcode-reader": "^1.0.4",
+    "sequelize": "^6.21.4",
+    "simple-git": "^3.7.1",
+    "sqlite3": "^5.0.11",
+    "util": "^0.12.4",
+    "jsdom": "^22.1.0"
+  }
+}
