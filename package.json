@@ -21,6 +21,7 @@
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "node-cron":"3.0.3",
     "awesome-phonenumber": "^2.64.0",
+    "youtubei.js": "14.0.0",
     "axios": "1.6.8",
     "cheerio": "^1.0.0-rc.10",
     "child_process": "^1.0.2",
