@@ -49,64 +49,58 @@ Bixby({
     desc: 'download video from youtube'
 }, async (message, match) => {
     try {
-        // Properly handle match value
         match = match || (message.reply_message && message.reply_message.text);
-        
-        // Check if match exists
         if (!match) {
-            return await message.send('*Please provide a YouTube URL or search term.\nExample: .video Al Quran*');
+            return await message.send('*Please provide a YouTube URL or search term.*\n*Example:* .video https://youtu.be/...');
         }
 
-        // Safely extract URLs
-        let url;
-        try {
-            url = await extractUrlsFromString(match);
-        } catch (error) {
-            console.error('URL extraction error:', error);
-            return await message.send('*Error processing the URL*');
+        // Show processing message
+        await message.send('*⬇️ Downloading video...*');
+
+        const urls = await extractUrlsFromString(match);
+        if (!urls || !urls[0]) {
+            // Handle search case
+            const results = await searchYT(match);
+            if (!results || !results.length) {
+                return await message.send('*No videos found.*');
+            }
+            return await message.send({
+                name: 'YOUTUBE VIDEO DOWNLOADER',
+                values: results.slice(0, 10).map(a => ({
+                    name: a.title,
+                    id: `video ${a.url}`
+                })),
+                withPrefix: true,
+                onlyOnce: false,
+                participates: [message.sender],
+                selectableCount: true
+            }, {}, 'poll');
         }
 
-        // Handle direct URL case
-        if (url && url[0]) {
-            try {
-                const ress = await downloadMp4(url[0]);
-                if (!ress) {
-                    return await message.send('*Failed to download video*');
-                }
-                return await message.send(ress, {
-                    mimetype: 'video/mp4'
-                }, 'video');
-            } catch (downloadError) {
-                console.error('Download error:', downloadError);
-                return await message.send('*Error downloading the video*');
-            }
-        } 
-        // Handle search case
-        else {
-            try {
-                const result = await searchYT(match);
-                if (!result || !result.length) {
-                    return await message.send('*No videos found*');
-                }
-                
-                return await message.send({
-                    name: 'YOUTUBE VIDEO DOWNLOADER',
-                    values: result.splice(0, 10).map(a => ({
-                        name: a.title || 'Untitled',
-                        id: `video ${a.url || ''}`
-                    })).filter(item => item.id !== 'video '),
-                    withPrefix: true,
-                    onlyOnce: false,
-                    participates: [message.sender],
-                    selectableCount: true
-                }, {}, 'poll');
-            } catch (searchError) {
-                console.error('Search error:', searchError);
-                return await message.send('*Error searching for videos*');
-            }
+        // Download video
+        const result = await downloadMp4(urls[0]);
+        
+        if (result.error) {
+            const errorMessages = {
+                'VIDEO_TOO_LARGE': '*Video is too large (max 100MB)*',
+                'STREAM_ERROR': '*Failed to process video stream*',
+                'DOWNLOAD_FAILED': '*Failed to download video*'
+            };
+            return await message.send(errorMessages[result.error] || '*An error occurred*');
         }
+
+        if (!result.buffer) {
+            return await message.send('*Failed to process video*');
+        }
+
+        // Send the video
+        return await message.send(result.buffer, {
+            mimetype: 'video/mp4',
+            caption: '*Here\'s your video!* 🎥'
+        }, 'video');
+
     } catch (error) {
         console.error('Video command error:', error);
-        return await message.send('*An unexpected error occurred*');
+        return await message.send('*An error occurred while processing your request*');
     }
 });
