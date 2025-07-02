@@ -16,9 +16,9 @@
     "url": "git+https://github.com/c-o-d-e-xx/WhatsBixby"
   },
   "dependencies": {
-    "@adiwajshing/keyed-db": "^0.2.4",
+    "@c-o-d-e-xx/baileys-revamped": "github:c-o-d-e-xx/baileys-revamped",
+    "@c-o-d-e-xx/keyed-db": "github:c-o-d-e-xx/keyed-db",
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
-    "baileys": "6.7.18",
     "node-cron":"3.0.3",
     "awesome-phonenumber": "^2.64.0",
     "axios": "1.6.8",

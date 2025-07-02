@@ -28,7 +28,7 @@
     "BOT_INFO": {
       "description": "baasic bot configration",
       "required": true,
-      "value": "INRL-BOT-MD;INRL;https://i.imgur.com/DyLAuEh.jpg"
+      "value": "WHATSBIXBY;Codex;https://raw.githubusercontent.com/c-o-d-e-xx/c-o-d-e-xx/refs/heads/main/img/bixby2.jpeg"
     },
     "PREFIX": {
       "description": "bot preifx  ., [.,!], false",
@@ -38,7 +38,7 @@
     "AUDIO_DATA": {
       "description": "audio metadata",
       "required": true,
-      "value": "ᴍᴜꜱɪᴄ;ᴋɪᴅ;https://i.imgur.com/DyLAuEh.jpg"
+      "value": "WHATSBIXBY;Codex;https://raw.githubusercontent.com/c-o-d-e-xx/c-o-d-e-xx/refs/heads/main/img/bixby2.jpeg"
     },
     "STICKER_DATA": {
       "description": "sticker data",
