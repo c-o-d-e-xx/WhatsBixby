@@ -8,7 +8,7 @@ const {
 } = require('../lib');
 const {
 	WA_DEFAULT_EPHEMERAL
-} = require("baileys");
+} = require("@c-o-d-e-xx/baileys-revamped");
 
 Bixby({
         pattern: 'whois ?(.*)',
