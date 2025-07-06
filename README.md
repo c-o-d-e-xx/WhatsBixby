@@ -19,7 +19,7 @@
 
 ### What is WhatsBixby?
 
-WhatsBixby is a WhatsApp bot that enables various features. It's built using JavaScript and Node.js framework, primarily leveraging the `@whiskeysockets/baileys` package.
+WhatsBixby is a WhatsApp bot that enables various features. It's built using JavaScript and Node.js framework, primarily leveraging the `@c-o-d-e-xx/baileys-revamped` package.
 
 ### Scan Qr
 
