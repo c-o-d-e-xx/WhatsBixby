@@ -15,7 +15,7 @@ const {
     generateLinkPreviewIfRequired,
     generateWAMessageFromContent,
     getBinaryNodeChildren
-  } = require("@whiskeysockets/baileys");
+  } = require("@c-o-d-e-xx/baileys-revamped");
 const bs = require("@whiskeysockets/baileys");
 const lib = require('../lib');
 const util = require("util");
