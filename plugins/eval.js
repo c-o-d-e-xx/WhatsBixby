@@ -16,7 +16,7 @@ const {
     generateWAMessageFromContent,
     getBinaryNodeChildren
   } = require("@c-o-d-e-xx/baileys-revamped");
-const bs = require("@whiskeysockets/baileys");
+const bs = require("@c-o-d-e-xx/baileys-revamped");
 const lib = require('../lib');
 const util = require("util");
 const Config = require("../config")
