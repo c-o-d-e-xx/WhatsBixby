@@ -1,3 +1,4 @@
+/*
 const{Bixby}=require('../lib');
 const {
     extensionForMediaMessage,
@@ -42,3 +43,5 @@ Bixby({
       await message.reply(util.format(err));
     }
 });
+
+*/
