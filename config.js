@@ -22,7 +22,7 @@ module.exports = {
 		API_KEY: process.env.HEROKU_API_KEY,
 		APP_NAME: process.env.HEROKU_APP_NAME
 	},
-	PORT: process.env.PORT || 3000,
+	PORT: process.env.PORT || 8080,
 	BASE_URL: process.env.BASE_URL || "https://codexnet.xyz/",
 	API_KEY: process.env.API_KEY || "L5Ce7iyZng",
 	REPO: "c-o-d-e-xx/WhatsBixby",
