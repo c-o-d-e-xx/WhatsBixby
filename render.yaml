@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: WhatsBixby
+    env: docker        
+    branch: master
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 8080
