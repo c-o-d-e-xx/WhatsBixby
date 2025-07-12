@@ -19,10 +19,101 @@ const {
 const axios = require("axios");
 
 Bixby({
+		pattern: "covid",
+		fromMe: MODE,
+		desc: "get covid stats of a country",
+		type: "info",
+	},
+	async (message, match) => {
+		if (!match) {
+			return await message.send('*🦠 Provide a country name!*\n_Example: corona India_');
+		}
+
+		try {
+			const enccountry = await EncodeInput(match, {
+				toLowerCase: true
+			});
+			const response = await axios.get($ {
+					BASE_URL
+				}
+				covid ? q = $ {
+					enccountry
+				} & apikey = $ {
+					API_KEY
+				});
+
+			const {
+				result
+			} = response.data;
+
+			if (!result || result.status !== 200) {
+				return await message.send('*❌ Failed to fetch data. Check country name or your API key.*');
+			}
+
+			const {
+				country,
+				totalCases,
+				totalDeaths,
+				totalRecovered,
+				information,
+				fullInformationLink,
+				covidimg
+			} = result;
+
+			const formatted = *
+				🦠COVID - 19 Stats
+			for $ {
+				match
+			}*
+
+			*
+			🌍Country: * $ {
+					country || 'N/A'
+				}
+				* 📊Total Cases: * $ {
+					totalCases || 'N/A'
+				}
+				* 💀Total Deaths: * $ {
+					totalDeaths || 'N/A'
+				}
+				* 💚Total Recovered: * $ {
+					totalRecovered || 'N/A'
+				}
+				* 🕒Info Updated: * $ {
+					information || 'N/A'
+				}
+
+			🔗* More Info: * $ {
+					fullInformationLink || 'N/A'
+				}
+				.trim();
+
+			const sent = await message.send({
+					url: covidimg
+				}, {
+					caption: formatted
+				},
+				"image"
+			);
+
+			return await message.send({
+					key: sent.key,
+					text: "🧼"
+				}, {},
+				"react"
+			);
+
+		} catch (err) {
+			console.error(err);
+			return await message.send('*❌ An error occurred while fetching COVID-19 information.*');
+		}
+	});
+
+Bixby({
 		pattern: "npm",
 		fromMe: MODE,
 		desc: "Searches Npm package",
-		type: "search",
+		type: "info",
 	},
 	async (message, match) => {
 		match = match || message.reply_message.text;
@@ -33,7 +124,14 @@ Bixby({
 		let response;
 		try {
 			response = await axios.get(
-				`${BASE_URL}search/npm?text=${EncodeInput(match)}&apikey=${API_KEY}`
+				$ {
+					BASE_URL
+				}
+				search / npm ? text = $ {
+					EncodeInput(match)
+				} & apikey = $ {
+					API_KEY
+				}
 			);
 		} catch (err) {
 			console.error("Axios request failed", err);
@@ -43,7 +141,10 @@ Bixby({
 		if (!response.data.status) {
 			return await message.send(
 				"⚠️ Your API key limit has been exceeded. You need to get a new key:\n" +
-				`${BASE_URL}api/signup\n\n` +
+				$ {
+					BASE_URL
+				}
+				api / signup\ n\ n +
 				"Then run: setvar inrl_key: your_new_apikey"
 			);
 		}
@@ -57,10 +158,16 @@ Bixby({
 			.map(
 				({
 					package: pkg
-				}) =>
-				`📦 *${pkg.name}* (v${pkg.version})
-🔗 ${pkg.links.npm}
-📝 ${pkg.description || "No description available"}`
+				}) => 📦 * $ {
+					pkg.name
+				}*(v$ {
+					pkg.version
+				})🔗 $ {
+					pkg.links.npm
+				}📝
+				$ {
+					pkg.description || "No description available"
+				}
 			)
 			.join("\n\n────────────────\n");
 
@@ -71,13 +178,25 @@ Bixby({
 			msg = await message.send({
 					url: npmImage
 				}, {
-					caption: `🔍 *NPM Search Results for:* ${match}\n\n${formattedResults}`
+					caption: 🔍 * NPM Search Results
+					for: * $ {
+						match
+					}\
+					n\ n$ {
+						formattedResults
+					}
 				},
 				"image"
 			);
 		} catch (sendErr) {
 			console.error("Failed to send NPM image message:", sendErr);
-			return await message.send(`🔍 *NPM Search Results for:* ${match}\n\n${formattedResults}`);
+			return await message.send(🔍 * NPM Search Results
+				for: * $ {
+					match
+				}\
+				n\ n$ {
+					formattedResults
+				});
 		}
 
 		await message.send({
@@ -93,7 +212,7 @@ Bixby({
 		pattern: "imdb",
 		fromMe: MODE,
 		desc: "get data from imdb",
-		type: "information",
+		type: "info",
 	},
 	async (message, match) => {
 		if (!match) {
@@ -103,7 +222,14 @@ Bixby({
 		let response;
 		try {
 			response = await axios.get(
-				`${BASE_URL}info/imdb?movie=${EncodeInput(match)}&apikey=${API_KEY}`
+				$ {
+					BASE_URL
+				}
+				info / imdb ? movie = $ {
+					EncodeInput(match)
+				} & apikey = $ {
+					API_KEY
+				}
 			);
 		} catch (err) {
 			console.error("Axios request failed", err);
@@ -113,29 +239,46 @@ Bixby({
 		if (!response.data.status) {
 			return await message.send(
 				"⚠️ Your API key limit has been exceeded. You need to get a new key:\n" +
-				`${BASE_URL}api/signup\n\n` +
+				$ {
+					BASE_URL
+				}
+				api / signup\ n\ n +
 				"Then run: setvar inrl_key: your_new_apikey"
 			);
 		}
 
 		const movie = response.data.result || {};
 
-		const formattedMessage = `
-🎬 *Title*: ${movie.Title || "N/A"}
-📅 *Year*: ${movie.Year || "N/A"}
-⭐ *Rated*: ${movie.Rated || "N/A"}
-⏱️ *Runtime*: ${movie.Runtime || "N/A"}
-🎭 *Genre*: ${movie.Genre || "N/A"}
-🎥 *Director*: ${movie.Director || "N/A"}
-👥 *Actors*: ${movie.Actors || "N/A"}
-📝 *Plot*: ${movie.Plot || "N/A"}
-🌍 *Country*: ${movie.Country || "N/A"}
-🌟 *Ratings*: ${Array.isArray(movie.Ratings)
-      ? movie.Ratings.map(r => `\n  - ${r.Source}: ${r.Value}`).join("")
-      : "N/A"
-    }
-💰 *Box Office*: ${movie.BoxOffice || "N/A"}
-    `.trim();
+		const formattedMessage = 🎬 * Title *: $ {
+				movie.Title || "N/A"
+			}📅* Year *: $ {
+				movie.Year || "N/A"
+			}⭐* Rated *: $ {
+				movie.Rated || "N/A"
+			}⏱️* Runtime *: $ {
+				movie.Runtime || "N/A"
+			}🎭* Genre *: $ {
+				movie.Genre || "N/A"
+			}🎥* Director *: $ {
+				movie.Director || "N/A"
+			}👥* Actors *: $ {
+				movie.Actors || "N/A"
+			}📝* Plot *: $ {
+				movie.Plot || "N/A"
+			}🌍* Country *: $ {
+				movie.Country || "N/A"
+			}🌟* Ratings *: $ {
+				Array.isArray(movie.Ratings) ?
+					movie.Ratings.map(r => \n - $ {
+						r.Source
+					}: $ {
+						r.Value
+					}).join("") :
+					"N/A"
+			}💰* Box Office *: $ {
+				movie.BoxOffice || "N/A"
+			}
+			.trim();
 
 		let msg;
 		if (movie.Poster && movie.Poster !== "N/A") {
@@ -163,7 +306,7 @@ Bixby({
 		pattern: "age",
 		fromMe: MODE,
 		desc: "get birth details",
-		type: "information",
+		type: "info",
 	},
 	async (message, match) => {
 		if (!match) {
@@ -179,7 +322,14 @@ Bixby({
 
 		try {
 			const response = await axios.get(
-				`${BASE_URL}info/age?dob=${EncodeInput(match)}&apikey=${API_KEY}`
+				$ {
+					BASE_URL
+				}
+				info / age ? dob = $ {
+					EncodeInput(match)
+				} & apikey = $ {
+					API_KEY
+				}
 			);
 
 			const data = response.data;
@@ -187,7 +337,10 @@ Bixby({
 			if (!data.status) {
 				return await message.send(
 					"⚠️ Your API key limit has been exceeded. You need to get a new key:\n" +
-					`${BASE_URL}api/signup\n\n` +
+					$ {
+						BASE_URL
+					}
+					api / signup\ n\ n +
 					"Then run: setvar inrl_key: your_new_apikey"
 				);
 			}
@@ -209,26 +362,40 @@ Bixby({
 				},
 			} = data.result;
 
-			const formattedMessage = `
-🎂 *AGE DETAILS*
+			const formattedMessage = 🎂 * AGE DETAILS *
 
-*Age:* ${age}
+				*
+				Age: * $ {
+					age
+				}
 
-🕰️ *Lifetime Stats*
-• *Months:* ${months}
-• *Days:* ${days}
-• *Hours:* ${hours}
-• *Minutes:* ${minutes}
-• *Seconds:* ${seconds}
+			🕰️* Lifetime Stats * • * Months: * $ {
+				months
+			}•* Days: * $ {
+				days
+			}•* Hours: * $ {
+				hours
+			}•* Minutes: * $ {
+				minutes
+			}•* Seconds: * $ {
+				seconds
+			}
 
-🎉 *Time Left for Next Birthday*
-• *Date:* ${date}
-• *Months Left:* ${remainingMonths}
-• *Days Left:* ${remainingDays}
-• *Hours Left:* ${remainingHours}
-• *Minutes Left:* ${remainingMinutes}
-• *Seconds Left:* ${remainingSeconds}
-`.trim();
+			🎉* Time Left
+			for Next Birthday * • * Date: * $ {
+					date
+				}•* Months Left: * $ {
+					remainingMonths
+				}•* Days Left: * $ {
+					remainingDays
+				}•* Hours Left: * $ {
+					remainingHours
+				}•* Minutes Left: * $ {
+					remainingMinutes
+				}•* Seconds Left: * $ {
+					remainingSeconds
+				}
+				.trim();
 
 			const imgUrl = "https://github.com/c-o-d-e-xx/c-o-d-e-xx/blob/main/img/ageapi.png?raw=true";
 			const msg = await message.send({
@@ -257,7 +424,7 @@ Bixby({
 		pattern: "country",
 		fromMe: MODE,
 		desc: "get country details",
-		type: "information",
+		type: "info",
 	},
 	async (message, match) => {
 		if (!match) {
@@ -265,12 +432,15 @@ Bixby({
 		}
 
 		try {
-			const response = await axios.get(`${BASE_URL}info/country`, {
-				params: {
-					code: match,
-					apikey: API_KEY
+			const response = await axios.get($ {
+					BASE_URL
 				}
-			});
+				info / country, {
+					params: {
+						code: match,
+						apikey: API_KEY
+					}
+				});
 
 			const {
 				result,
@@ -278,7 +448,10 @@ Bixby({
 			} = response.data;
 
 			if (!status) {
-				return await message.send(`Please enter a new apikey, as the given apikey limit has been exceeded. Visit ${BASE_URL}api/signup to get a new apikey.\n*setvar inrl_key: your apikey*`);
+				return await message.send(Please enter a new apikey, as the given apikey limit has been exceeded.Visit $ {
+						BASE_URL
+					}
+					api / signup to get a new apikey.\n * setvar inrl_key: your apikey * );
 			}
 
 			const {
@@ -301,20 +474,48 @@ Bixby({
 			const neighborList = typeof neighbors === 'string' ? neighbors.split(/\s*,\s*/) : neighbors || [];
 			const languageCodeList = typeof language_codes === 'string' ? language_codes.split(/\s*,\s*/) : language_codes || [];
 
-			const formattedMessage = `
-*🌍 Country:* ${name}
-*🏛️ Capital:* ${capital || 'N/A'}
-*🗣️ Languages:* ${languages.join(', ') || 'N/A'}
-*💱 Currency:* ${currency || 'N/A'}
-*📌 Famous For:* ${famous_us || 'N/A'}
-*📜 Constitutional Form:* ${constitutional_form || 'N/A'}
-*🔤 Language Codes:* ${languageCodeList.join(', ') || 'N/A'}
-*🌐 Neighbors:* ${neighborList.join(', ') || 'N/A'}
-*🇺🇳 Flag:* ${flag || 'N/A'}
-*📅 Date:* ${date || 'N/A'}
-*📞 Phone Code:* ${phoneCode || 'N/A'}
-*🕒 Local Time:* ${times?.[0] ? `${times[0].time} (${times[0].zone})` : 'N/A'}
-      `.trim();
+			const formattedMessage = *
+				🌍Country: * $ {
+					name
+				}
+				* 🏛️Capital: * $ {
+					capital || 'N/A'
+				}
+				* 🗣️Languages: * $ {
+					languages.join(', ') || 'N/A'
+				}
+				* 💱Currency: * $ {
+					currency || 'N/A'
+				}
+				* 📌Famous For: * $ {
+					famous_us || 'N/A'
+				}
+				* 📜Constitutional Form: * $ {
+					constitutional_form || 'N/A'
+				}
+				* 🔤Language Codes: * $ {
+					languageCodeList.join(', ') || 'N/A'
+				}
+				* 🌐Neighbors: * $ {
+					neighborList.join(', ') || 'N/A'
+				}
+				* 🇺🇳Flag: * $ {
+					flag || 'N/A'
+				}
+				* 📅Date: * $ {
+					date || 'N/A'
+				}
+				* 📞Phone Code: * $ {
+					phoneCode || 'N/A'
+				}
+				* 🕒Local Time: * $ {
+					times?.[0] ? $ {
+						times[0].time
+					}($ {
+						times[0].zone
+					}) : 'N/A'
+				}
+				.trim();
 
 			const msg = await message.send({
 				url: image
@@ -338,15 +539,18 @@ Bixby({
 		pattern: "checkapi",
 		fromMe: MODE,
 		desc: "check apikey limit",
-		type: "information",
+		type: "info",
 	},
 	async (message, match) => {
 		try {
-			const response = await axios.get(`${BASE_URL}checkapikey`, {
-				params: {
-					apikey: API_KEY
+			const response = await axios.get($ {
+					BASE_URL
 				}
-			});
+				checkapikey, {
+					params: {
+						apikey: API_KEY
+					}
+				});
 
 			const {
 				status,
@@ -361,13 +565,23 @@ Bixby({
 				return await message.send("*❌ API request failed.*");
 			}
 
-			const msg = `
-*🔑 API KEY:* ${apikey}
-*👤 CREATOR:* ${creator}
-*📈 MAX REQ LIMIT:* ${total_limit}
-*📊 TOTAL REQUESTS:* ${total_requests}
-*🧮 REMAINING LIMIT:* ${remaining_limit}
-      `.trim();
+			const msg = *
+				🔑API KEY: * $ {
+					apikey
+				}
+				* 👤CREATOR: * $ {
+					creator
+				}
+				* 📈MAX REQ LIMIT: * $ {
+					total_limit
+				}
+				* 📊TOTAL REQUESTS: * $ {
+					total_requests
+				}
+				* 🧮REMAINING LIMIT: * $ {
+					remaining_limit
+				}
+				.trim();
 
 			const imageUrl = "https://cdn-icons-png.flaticon.com/512/6905/6905323.png";
 
