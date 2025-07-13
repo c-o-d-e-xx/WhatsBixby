@@ -1,6 +1,6 @@
 {
   "name": "WhatsBixby",
-  "version": "4.1.4",
+  "version": "4.1.5",
   "description": "WhatsApp bot made with nodejs and baileys",
   "main": "index.js",
   "scripts": {

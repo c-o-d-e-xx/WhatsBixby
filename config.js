@@ -40,7 +40,7 @@ module.exports = {
 	READ: process.env.READ || "false", //true, command
 	CHATBOT: process.env.CHATBOT || "false",
 	REACT: process.env.REACT || "false", //true, command, emoji
-	WARNCOUND: process.env.WARNCOUND || 5,
+	WARNCOUNT: process.env.WARNCOUNT || 5,
 	BOT_INFO: process.env.BOT_INFO || "WHATSBIXBY;Codex;https://raw.githubusercontent.com/c-o-d-e-xx/c-o-d-e-xx/refs/heads/main/img/bixby2.jpeg",
 	WORKTYPE: process.env.WORKTYPE || "public",
 	PREFIX: process.env.PREFIX || "[.,!]", //both  .  and [.] equal, for multi prefix we use [] this
