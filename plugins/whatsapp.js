@@ -4,7 +4,9 @@ const {
 	getCompo,
 	sleep,
 	config,
-	getString
+	getString,
+	isAdmin,
+	isBotAdmin
 } = require('../lib');
 const {
 	WA_DEFAULT_EPHEMERAL

@@ -16,7 +16,7 @@ Bixby({
 
     await message.send('⬇️ *Processing your video...*');
 
-    const { data } = await axios.get(`https://codexnet.xyz/api/ytdl?url=${encodeURIComponent(match)}&apikey=L5Ce7iyZng`);
+    const { data } = await axios.get(`https://codexnet.xyz/ytv?url=${encodeURIComponent(match)}&apikey=L5Ce7iyZng`);
 
     const result = data?.result;
     if (!result?.success || !result?.download_url) {
