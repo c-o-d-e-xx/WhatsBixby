@@ -2,10 +2,10 @@ const { Bixby, MODE } = require("../lib");
 const axios = require("axios");
 
 Bixby({
-  pattern: 'video ?(.*)',
+  pattern: 'ytv ?(.*)',
   fromMe: MODE,
   type: 'downloader',
-  desc: 'Download YouTube video via direct link'
+  desc: 'downloads videos from youtube'
 }, async (message, match) => {
   try {
     match = match || message.reply_message?.text;
