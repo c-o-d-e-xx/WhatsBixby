@@ -4,15 +4,15 @@ you may not use this file except in compliance with the License.
 Codex - Ziyan
 */
 
-const cluster = require('cluster');
+const { fork } = require('child_process');
 const os = require('os');
 const path = require('path');
 const fs = require('fs');
 const express = require("express");
 const session = require('express-session');
 const axios = require('axios');
+
 const workers = {};
-const numCPUs = process.env.TOTAL_FORK === '1' ? 1 : os.cpus().length;
 const logFilePath = path.join(__dirname, 'worker-logs.txt');
 
 function customLogger(type, message) {
@@ -23,31 +23,24 @@ function customLogger(type, message) {
 
 function start(file) {
     if (workers[file]) return;
+
     const args = [path.join(__dirname, file), ...process.argv.slice(2)];
-    for (let i = 0; i < numCPUs; i++) {
-        cluster.setupMaster({
-            exec: path.join(__dirname, file),
-            args: args.slice(1),
-        });
-        const p = cluster.fork();
-        p.on('online', () => {
-            p.send({ type: 'overrideLogs' });
-        });
-        p.on('message', (data) => {
-            if (data.type === 'log') {
-                customLogger(data.level, `[Worker ${p.process.pid}] ${data.message}`);
-            }
-        });
-        p.on('exit', (code, signal) => {
-            console.error(`Child process for ${file} exited with code: ${code}, signal: ${signal}`);
-            if (!workers[file]) return;
-            delete workers[file];
-            console.log("Restarting the process immediately");
-            start(file);
-        });
-        if (!workers[file]) workers[file] = [];
-        workers[file].push(p);
-    }
+    const worker = fork(args[0], args.slice(1));
+
+    worker.on('message', (data) => {
+        if (data.type === 'log') {
+            customLogger(data.level || 'info', `[Child ${worker.pid}] ${data.message}`);
+        }
+    });
+
+    worker.on('exit', (code, signal) => {
+        console.error(`Child process for ${file} exited with code: ${code}, signal: ${signal}`);
+        delete workers[file];
+        console.log("Restarting the process immediately");
+        start(file);
+    });
+
+    workers[file] = [worker];
 }
 
 function resetProcess(file) {
@@ -150,11 +143,11 @@ app.post('/auth', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, 'lib/base/login.html'));
+    res.sendFile(path.join(__dirname, 'lib/core/login.html'));
 });
 
 app.get('/', requireAuth, (req, res) => {
-    res.sendFile(path.join(__dirname, 'lib/base/index.html'));
+    res.sendFile(path.join(__dirname, 'lib/core/index.html'));
 });
 
 app.get('/info', requireAuth, async (req, res) => {
@@ -168,12 +161,10 @@ app.get('/info', requireAuth, async (req, res) => {
             memoryUsage: process.memoryUsage(),
             environment: process.env.NODE_ENV || 'development'
         },
-        cluster: {
-            isMaster: cluster.isMaster,
-            workers: Object.keys(cluster.workers).map(id => ({
-                id: id,
-                pid: cluster.workers[id].process.pid,
-                isOnline: cluster.workers[id].isConnected(),
+        process: {
+            workers: Object.values(workers).map(w => ({
+                pid: w[0]?.pid,
+                connected: w[0]?.connected
             }))
         },
         os: {
