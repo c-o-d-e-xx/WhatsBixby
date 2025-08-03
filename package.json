@@ -7,7 +7,7 @@
     "start": "node index.js"
   },
   "engines": {
-  "node": "22.16.0",
+  "node": "22.17.1",
   "npm": "11.4.2"
 },
 "engineStrict": true,
@@ -28,6 +28,7 @@
     "chalk" : "5.4.1",
     "dotenv": "^16.0.2",
     "express": "4.21.2",
+    "express-session": "1.18.2",
     "file-type": "^16.5.3",
     "fluent-ffmpeg": "^2.1.2",
     "form-data": "^4.0.0",
