@@ -11,7 +11,6 @@ const start = async () => {
     const bot = new WhatsApp('connect')
     await bot.init();
     await bot.connect();
-    await bot.web();
   } catch (error) {
     console.error(error)
   }
