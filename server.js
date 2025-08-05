@@ -120,10 +120,16 @@ const port = process.env.PORT || 8000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
     secret: process.env.SESSION_SECRET || 'supersecret',
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000
+    }
 }));
 
 function requireAuth(req, res, next) {
@@ -137,26 +143,37 @@ app.post('/auth', (req, res) => {
     const adminPass = process.env.ADMIN_PASSWORD || 'password123';
     if (username === adminUser && password === adminPass) {
         req.session.authenticated = true;
+        req.session.username = username;
         return res.sendStatus(200);
     }
     return res.sendStatus(401);
 });
 
 app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, 'lib/core/login.html'));
+    res.sendFile(path.join(__dirname, 'login.html'));
+});
+
+app.get('/logout', (req, res) => {
+    req.session.destroy(err => {
+        if (err) {
+            console.error('Error destroying session:', err);
+            return res.sendStatus(500);
+        }
+        res.redirect('/login');
+    });
 });
 
 app.get('/', requireAuth, (req, res) => {
-    res.sendFile(path.join(__dirname, 'lib/core/index.html'));
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.get('/info', requireAuth, async (req, res) => {
     const geolocation = await getGeolocation();
     const serverInfo = {
         server: {
-            name: 'Cortana Server',
+            name: 'Bot Server',
             port: port,
-            uptime: `Uptime: ${formatUptime(process.uptime())}`,
+            uptime: formatUptime(process.uptime()),
             nodeVersion: process.version,
             memoryUsage: process.memoryUsage(),
             environment: process.env.NODE_ENV || 'development'
@@ -177,13 +194,22 @@ app.get('/info', requireAuth, async (req, res) => {
             cpus: os.cpus().map(cpu => cpu.model),
             cpuCount: os.cpus().length
         },
-        paths: {
-            logFilePath: path.resolve('worker-logs.txt'),
-            sessionDir: path.resolve('session/')
+        session: {
+            username: req.session.username || process.env.ADMIN_USERNAME || 'admin',
+            authenticated: req.session.authenticated
         },
         location: geolocation
     };
     res.json(serverInfo);
+});
+
+app.get('/stats', requireAuth, (req, res) => {
+    // Replace with actual data from your bot
+    res.json({
+        messages: 12543, // Example - replace with real message count
+        users: 842,      // Example - replace with real user count
+        uptime: formatUptime(process.uptime())
+    });
 });
 
 app.get('/logs', requireAuth, (req, res) => {
@@ -213,5 +239,5 @@ app.post('/bootup', requireAuth, (req, res) => {
     return res.sendStatus(200);
 });
 
-app.listen(port, () => console.log(`Cortana Server listening on http://localhost:${port}`));
+app.listen(port, () => console.log(`Bot Server listening on http://localhost:${port}`));
 BootUp();
