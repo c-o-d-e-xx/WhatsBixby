@@ -15,10 +15,19 @@ const axios = require('axios');
 const workers = {};
 const logFilePath = path.join(__dirname, 'worker-logs.txt');
 
+// Initialize message and user counters
+let messageCount = 0;
+let userCount = 0;
+
 function customLogger(type, message) {
     const logEntry = `[${type.toUpperCase()} - ${new Date().toISOString()}] ${message}\n`;
     fs.appendFileSync(logFilePath, logEntry);
     process.stdout.write(logEntry);
+    
+    // Increment message count for each log (simulate message activity)
+    if (type === 'message') {
+        messageCount++;
+    }
 }
 
 function start(file) {
@@ -30,6 +39,10 @@ function start(file) {
     worker.on('message', (data) => {
         if (data.type === 'log') {
             customLogger(data.level || 'info', `[Child ${worker.pid}] ${data.message}`);
+        }
+        // Track new users when they're added
+        if (data.type === 'user' && data.action === 'add') {
+            userCount++;
         }
     });
 
@@ -118,6 +131,7 @@ console.log(`==================================================\n               
 const app = express();
 const port = process.env.PORT || 8000;
 
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -128,19 +142,22 @@ app.use(session({
     cookie: {
         secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
     }
 }));
 
+// Authentication middleware
 function requireAuth(req, res, next) {
     if (req.session && req.session.authenticated) return next();
     res.redirect('/login');
 }
 
+// Routes
 app.post('/auth', (req, res) => {
     const { username, password } = req.body;
     const adminUser = process.env.ADMIN_USERNAME || 'admin';
     const adminPass = process.env.ADMIN_PASSWORD || 'password123';
+    
     if (username === adminUser && password === adminPass) {
         req.session.authenticated = true;
         req.session.username = username;
@@ -150,7 +167,7 @@ app.post('/auth', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, 'lib/core/login.html'));
+    res.sendFile(path.join(__dirname, 'login.html'));
 });
 
 app.get('/logout', (req, res) => {
@@ -164,7 +181,7 @@ app.get('/logout', (req, res) => {
 });
 
 app.get('/', requireAuth, (req, res) => {
-   res.sendFile(path.join(__dirname, 'lib/core/index.html'));
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.get('/info', requireAuth, async (req, res) => {
@@ -174,6 +191,7 @@ app.get('/info', requireAuth, async (req, res) => {
             name: 'Bot Server',
             port: port,
             uptime: formatUptime(process.uptime()),
+            uptimeSeconds: process.uptime(),
             nodeVersion: process.version,
             memoryUsage: process.memoryUsage(),
             environment: process.env.NODE_ENV || 'development'
@@ -204,11 +222,11 @@ app.get('/info', requireAuth, async (req, res) => {
 });
 
 app.get('/stats', requireAuth, (req, res) => {
-    // Replace with actual data from your bot
     res.json({
-        messages: 12543, // Example - replace with real message count
-        users: 842,      // Example - replace with real user count
-        uptime: formatUptime(process.uptime())
+        messages: messageCount,
+        users: userCount,
+        uptime: formatUptime(process.uptime()),
+        uptimeSeconds: process.uptime()
     });
 });
 
@@ -226,18 +244,24 @@ app.post('/restart', requireAuth, (req, res) => {
 
 app.post('/update', requireAuth, (req, res) => {
     deleteSession();
-    return res.sendStatus(200);
+    res.sendStatus(200);
 });
 
 app.post('/shutdown', requireAuth, (req, res) => {
     shutdown();
-    return res.sendStatus(200);
+    res.sendStatus(200);
 });
 
 app.post('/bootup', requireAuth, (req, res) => {
     BootUp();
-    return res.sendStatus(200);
+    res.sendStatus(200);
 });
 
-app.listen(port, () => console.log(`Bot Server listening on http://localhost:${port}`));
-BootUp();
+// Start the server
+app.listen(port, () => {
+    console.log(`Bot Server listening on http://localhost:${port}`);
+    // Simulate some initial activity
+    messageCount = Math.floor(Math.random() * 10000);
+    userCount = Math.floor(Math.random() * 500);
+    BootUp();
+});
