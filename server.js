@@ -150,7 +150,7 @@ app.post('/auth', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, 'login.html'));
+    res.sendFile(path.join(__dirname, 'lib/core/login.html'));
 });
 
 app.get('/logout', (req, res) => {
@@ -164,7 +164,7 @@ app.get('/logout', (req, res) => {
 });
 
 app.get('/', requireAuth, (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+   res.sendFile(path.join(__dirname, 'lib/core/index.html'));
 });
 
 app.get('/info', requireAuth, async (req, res) => {
