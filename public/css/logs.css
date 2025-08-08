@@ -1,0 +1,140 @@
+:root {
+    --bg: #1e1e2e;
+    --card-bg: #2a2a3a;
+    --text: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --primary: #6c5ce7;
+    --danger: #ff4757;
+    --success: #00b894;
+    --border: #3e3e4e;
+}
+
+.light {
+    --bg: #f5f6fa;
+    --card-bg: #ffffff;
+    --text: #2d3436;
+    --text-secondary: #636e72;
+    --border: #dfe6e9;
+}
+
+body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: 'Fira Code', monospace;
+    margin: 0;
+    padding: 0;
+}
+
+.logs-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+.logs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.btn.active {
+    background-color: var(--primary);
+    color: white;
+}
+
+.btn.danger {
+    background-color: var(--danger);
+    color: white;
+}
+
+.search-box {
+    position: relative;
+}
+
+.search-box input {
+    padding: 8px 30px 8px 10px;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    background-color: var(--card-bg);
+    color: var(--text);
+    width: 200px;
+}
+
+.search-box i {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+}
+
+.logs-content {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    padding: 15px;
+    height: 70vh;
+    overflow-y: auto;
+    font-family: 'Fira Code', monospace;
+    border: 1px solid var(--border);
+}
+
+.log-entry {
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--border);
+    word-break: break-all;
+}
+
+.timestamp {
+    color: var(--primary);
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.log-level-info {
+    color: var(--success);
+}
+
+.log-level-error {
+    color: var(--danger);
+}
+
+.log-level-warn {
+    color: #f39c12;
+}
+
+/* Scrollbar styling */
+.logs-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.logs-content::-webkit-scrollbar-track {
+    background: var(--bg);
+}
+
+.logs-content::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 4px;
+}
