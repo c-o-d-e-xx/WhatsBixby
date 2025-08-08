@@ -319,15 +319,21 @@ function formatUptime(seconds) {
     return uptime;
 }
 
-async function deleteSession() {
+function deleteSession() {
     fs.readdir('session/', (err, files) => {
-        if (err) return customLogger('error', `Session cleanup error: ${err.message}`);
+        if (err) {
+            customLogger('error', `Session cleanup error: ${err.message}`);
+            return;
+        }
         files.forEach(file => {
             if (file !== 'Aurora.txt') {
-                fs.unlink(path.join('session/', file), err => {
-                    if (err) customLogger('error', `Session delete error: ${err.message}`);
-                    else customLogger('system', `Cleared session file: ${file}`);
-                };
+                fs.unlink(path.join('session/', file), (err) => {
+                    if (err) {
+                        customLogger('error', `Session delete error: ${err.message}`);
+                    } else {
+                        customLogger('system', `Cleared session file: ${file}`);
+                    }
+                });
             }
         });
     });
