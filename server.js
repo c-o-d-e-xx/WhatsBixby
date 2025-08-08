@@ -170,6 +170,17 @@ app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'login.html'));
 });
 
+// Add this to your existing routes
+app.get('/logs-page', requireAuth, (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'logs.html'));
+});
+
+// Add this for log clearing (optional)
+app.post('/clear-logs', requireAuth, (req, res) => {
+    fs.writeFileSync(logFilePath, '');
+    res.sendStatus(200);
+});
+
 app.get('/logout', (req, res) => {
     req.session.destroy(err => {
         if (err) {
