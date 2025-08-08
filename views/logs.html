@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logs Viewer</title>
+    <link rel="stylesheet" href="/css/logs.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="logs-container">
+        <div class="logs-header">
+            <h1><i class="fas fa-terminal"></i> Server Logs</h1>
+            <div class="controls">
+                <button id="tailLogs" class="btn active">
+                    <i class="fas fa-sync-alt"></i> Tail Logs
+                </button>
+                <button id="clearLogs" class="btn danger">
+                    <i class="fas fa-trash"></i> Clear
+                </button>
+                <div class="search-box">
+                    <input type="text" id="searchLogs" placeholder="Search logs...">
+                    <i class="fas fa-search"></i>
+                </div>
+            </div>
+        </div>
+        <div class="logs-content" id="logsContent">
+            <!-- Logs will appear here dynamically -->
+        </div>
+    </div>
+    <script src="/js/logs.js"></script>
+</body>
+</html>
