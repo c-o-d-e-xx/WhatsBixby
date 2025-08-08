@@ -21,10 +21,15 @@ let userCount = 0;
 
 function customLogger(type, message) {
     const logEntry = `[${type.toUpperCase()} - ${new Date().toISOString()}] ${message}\n`;
+    
+    // Ensure the log file exists before writing
+    if (!fs.existsSync(logFilePath)) {
+        fs.writeFileSync(logFilePath, ''); // Create empty file
+    }
+    
     fs.appendFileSync(logFilePath, logEntry);
     process.stdout.write(logEntry);
     
-    // Increment message count for each log (simulate message activity)
     if (type === 'message') {
         messageCount++;
     }
@@ -243,7 +248,13 @@ app.get('/stats', requireAuth, (req, res) => {
 
 app.get('/logs', requireAuth, (req, res) => {
     fs.readFile(logFilePath, 'utf8', (err, data) => {
-        if (err) return res.status(500).send("Error reading log file.");
+        if (err) {
+            // If file doesn't exist, return empty logs
+            if (err.code === 'ENOENT') {
+                return res.type('text/plain').send('No logs available yet.');
+            }
+            return res.status(500).send("Error reading log file.");
+        }
         res.type('text/plain').send(data);
     });
 });
