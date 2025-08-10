@@ -38,6 +38,38 @@ document.addEventListener('DOMContentLoaded', function() {
             .finally(() => resetButton(this, 'Boot Up'));
     });
 
+    document.querySelector('.nav-item i.fas.fa-file-alt').parentElement.addEventListener('click', function(e) {
+    e.preventDefault();
+    
+    // Remove active class from all nav items and add to logs
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+    this.classList.add('active');
+    
+    // Store the header content
+    const header = document.querySelector('.header').outerHTML;
+    
+    // Update main content area
+    const mainContent = document.querySelector('.main-content');
+    mainContent.innerHTML = `
+        ${header}
+        <div class="logs-content-container">
+            <!-- Logs content will be loaded here -->
+            Loading logs...
+        </div>
+    `;
+
+    // Load logs page content
+    fetch('/logs-page')
+        .then(response => response.text())
+        .then(content => {
+            document.querySelector('.logs-content-container').innerHTML = content;
+        })
+        .catch(error => {
+            console.error('Error loading logs:', error);
+            document.querySelector('.logs-content-container').innerHTML = 'Error loading logs';
+        });
+});
+
     function showLoading(button, text) {
         const icon = button.querySelector('i');
         const originalIcon = icon.className;
