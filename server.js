@@ -54,19 +54,36 @@ initLogFile();
 // ======================
 // WORKER MANAGEMENT
 // ======================
+// ======================
+// WORKER MANAGEMENT
+// ======================
 function start(file) {
     if (workers[file]) return;
 
     const args = [path.join(__dirname, file), ...process.argv.slice(2)];
     const worker = fork(args[0], args.slice(1));
 
+    // Improve worker message handling
     worker.on('message', (data) => {
-        if (data.type === 'log') {
-            customLogger(data.level || 'info', `[Child ${worker.pid}] ${data.message}`);
-        }
-        if (data.type === 'user' && data.action === 'add') {
+        if (typeof data === 'string') {
+            // Handle plain string messages
+            customLogger('worker', `[${file}] ${data}`);
+        } else if (data.type === 'log') {
+            // Handle structured log messages
+            customLogger(data.level || 'info', `[${file}:${worker.pid}] ${data.message}`);
+        } else if (data.type === 'user' && data.action === 'add') {
             userCount++;
         }
+    });
+
+    // Capture stdout from worker
+    worker.stdout?.on('data', (data) => {
+        customLogger('worker', `[${file}:stdout] ${data.toString().trim()}`);
+    });
+
+    // Capture stderr from worker
+    worker.stderr?.on('data', (data) => {
+        customLogger('error', `[${file}:stderr] ${data.toString().trim()}`);
     });
 
     worker.on('exit', (code, signal) => {
@@ -77,6 +94,7 @@ function start(file) {
     });
 
     workers[file] = [worker];
+    customLogger('info', `Started worker process for ${file} with PID ${worker.pid}`);
 }
 
 function resetProcess(file) {
