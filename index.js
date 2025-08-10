@@ -6,6 +6,25 @@ Codex - Ziyan
 
 const WhatsApp = require("./lib/client")
 
+if (process.send) {
+    const originalConsole = {
+        log: console.log,
+        error: console.error,
+        warn: console.warn,
+        info: console.info
+    };
+
+    console.log = (...args) => {
+        originalConsole.log(...args);
+        process.send({ type: 'log', level: 'info', message: args.join(' ') });
+    };
+
+    console.error = (...args) => {
+        originalConsole.error(...args);
+        process.send({ type: 'log', level: 'error', message: args.join(' ') });
+    };
+}
+
 const start = async () => {
  try {
     const bot = new WhatsApp('connect')
