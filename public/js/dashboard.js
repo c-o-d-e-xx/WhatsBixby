@@ -38,47 +38,81 @@ document.addEventListener('DOMContentLoaded', function() {
             .finally(() => resetButton(this, 'Boot Up'));
     });
 
+    // ========================
+    // UPDATED LOGS CLICK HANDLER
+    // ========================
     document.querySelector('.nav-item i.fas.fa-file-alt').parentElement.addEventListener('click', function(e) {
-    e.preventDefault();
-    
-    // Remove active class from all nav items and add to logs
-    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-    this.classList.add('active');
-    
-    // Store the header content
-    const header = document.querySelector('.header').outerHTML;
-    
-    // Update main content area
-    const mainContent = document.querySelector('.main-content');
-    mainContent.innerHTML = `
-        ${header}
-        <div class="logs-content-container">
-            <!-- Logs content will be loaded here -->
-            Loading logs...
-        </div>
-    `;
+        e.preventDefault();
 
-    // Load logs page content
-    fetch('/logs-page')
-        .then(response => response.text())
-        .then(content => {
-            document.querySelector('.logs-content-container').innerHTML = content;
-        })
-        .catch(error => {
-            console.error('Error loading logs:', error);
-            document.querySelector('.logs-content-container').innerHTML = 'Error loading logs';
+        // Change the URL without reload
+        window.history.pushState({}, '', '/logs');
+
+        // Update active menu
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+        this.classList.add('active');
+
+        // Keep header
+        const header = document.querySelector('.header').outerHTML;
+
+        // Logs page layout (same style as old logs-page)
+        const logsLayout = `
+            ${header}
+            <div class="logs-content-container">
+                <h2>System Logs</h2>
+                <div class="logs-actions" style="margin-bottom: 15px;">
+                    <button id="refreshLogs" class="btn btn-primary" style="margin-right: 10px;">Refresh</button>
+                    <button id="clearLogs" class="btn btn-danger">Clear Logs</button>
+                </div>
+                <pre id="logsOutput" style="white-space: pre-wrap; background: #000; color: #0f0; padding: 10px; border-radius: 5px; max-height: calc(100vh - 250px); overflow-y: auto;">
+Loading logs...
+                </pre>
+            </div>
+        `;
+
+        const mainContent = document.querySelector('.main-content');
+        mainContent.innerHTML = logsLayout;
+
+        // Load logs from server
+        function loadLogs() {
+            fetch('/logs')
+                .then(response => response.text())
+                .then(logText => {
+                    document.getElementById('logsOutput').textContent = logText;
+                })
+                .catch(error => {
+                    console.error('Error loading logs:', error);
+                    document.getElementById('logsOutput').textContent = 'Error loading logs';
+                });
+        }
+
+        // Refresh button
+        document.getElementById('refreshLogs').addEventListener('click', loadLogs);
+
+        // Clear logs button
+        document.getElementById('clearLogs').addEventListener('click', () => {
+            fetch('/clear-logs', { method: 'POST' }).then(() => loadLogs());
         });
-});
+
+        // Initial load
+        loadLogs();
+    });
+
+    // Handle browser back/forward
+    window.addEventListener('popstate', function() {
+        if (window.location.pathname === '/logs') {
+            document.querySelector('.nav-item i.fas.fa-file-alt').parentElement.click();
+        }
+    });
 
     function showLoading(button, text) {
         const icon = button.querySelector('i');
         const originalIcon = icon.className;
         const originalHtml = button.innerHTML;
-        
+
         button.disabled = true;
         icon.className = 'fas fa-spinner fa-spin';
         button.querySelector('.btn-text').textContent = text;
-        
+
         button.dataset.original = originalHtml;
     }
 
@@ -93,26 +127,21 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch('/info')
             .then(response => response.json())
             .then(data => {
-                // Update server info
                 document.getElementById('nodeVersion').textContent = data.server.nodeVersion;
                 document.getElementById('platform').textContent = `${data.os.platform} ${data.os.release}`;
                 document.getElementById('cpuCores').textContent = data.os.cpuCount;
-                
-                // Format memory usage
+
                 const mem = data.server.memoryUsage;
                 const usedMB = Math.round(mem.heapUsed / 1024 / 1024);
                 const totalMB = Math.round(mem.heapTotal / 1024 / 1024);
                 document.getElementById('memoryUsage').textContent = `${usedMB}MB / ${totalMB}MB`;
-                
-                // Update uptime
+
                 updateUptime(data.server.uptime);
-                
-                // Update bot status
+
                 const workersRunning = data.process.workers.length > 0;
                 document.getElementById('statusStat').textContent = workersRunning ? 'Online' : 'Offline';
                 document.getElementById('statusDetail').textContent = workersRunning ? 'Running' : 'Stopped';
-                
-                // Change status color
+
                 const statusIcon = document.querySelector('.stat-icon.danger');
                 if (workersRunning) {
                     statusIcon.classList.remove('danger');
@@ -127,20 +156,16 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    // Parse uptime from string and update every second
     function updateUptime(uptimeString) {
-        // Extract time parts from the uptime string
         const timeParts = uptimeString.match(/(\d+) hours, (\d+) minutes, (\d+) seconds/);
         if (!timeParts) return;
-        
+
         let hours = parseInt(timeParts[1]);
         let minutes = parseInt(timeParts[2]);
         let seconds = parseInt(timeParts[3]);
-        
-        // Update the display immediately
+
         updateUptimeDisplay(hours, minutes, seconds);
-        
-        // Set up interval to update every second
+
         setInterval(() => {
             seconds++;
             if (seconds >= 60) {
@@ -160,14 +185,11 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('uptimeStat').textContent = formatted;
     }
 
-    // Simulate message and user counts (replace with real data)
     function updateStats() {
-        // These would ideally come from your backend API
         document.getElementById('messagesStat').textContent = Math.floor(Math.random() * 10000);
         document.getElementById('usersStat').textContent = Math.floor(Math.random() * 500);
     }
 
-    // Check bot status
     function updateStatus() {
         fetch('/info')
             .then(response => response.json())
@@ -175,7 +197,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const workersRunning = data.process.workers.length > 0;
                 document.getElementById('statusStat').textContent = workersRunning ? 'Online' : 'Offline';
                 document.getElementById('statusDetail').textContent = workersRunning ? 'Running' : 'Stopped';
-                
+
                 const statusIcon = document.querySelector('.stat-icon.danger');
                 if (workersRunning) {
                     statusIcon.classList.remove('danger');
@@ -187,12 +209,11 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    // Initialize dashboard
+    // Init dashboard
     fetchServerInfo();
     updateStats();
     updateStatus();
-    
-    // Update stats periodically
+
     setInterval(updateStats, 10000);
     setInterval(fetchServerInfo, 30000);
 });
