@@ -41,179 +41,135 @@ document.addEventListener('DOMContentLoaded', function() {
     // ========================
     // UPDATED LOGS CLICK HANDLER
     // ========================
-    document.querySelector('.nav-item i.fas.fa-file-alt').parentElement.addEventListener('click', function(e) {
-        e.preventDefault();
+    // Logs click handler replaced by merged logs.js logic
 
-        // Change the URL without reload
-        window.history.pushState({}, '', '/logs');
+// === Logs Page Handler (merged from logs.js) ===
+document.querySelector('.nav-item i.fas.fa-file-alt').parentElement.addEventListener('click', function(e) {
+    e.preventDefault();
+    window.history.pushState({}, '', '/logs');
 
-        // Update active menu
-        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-        this.classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+    this.classList.add('active');
 
-        // Keep header
-        const header = document.querySelector('.header').outerHTML;
-
-        // Logs page layout (same style as old logs-page)
-        const logsLayout = `
-            ${header}
-            <div class="logs-content-container">
-                <h2>System Logs</h2>
-                <div class="logs-actions" style="margin-bottom: 15px;">
-                    <button id="refreshLogs" class="btn btn-primary" style="margin-right: 10px;">Refresh</button>
-                    <button id="clearLogs" class="btn btn-danger">Clear Logs</button>
+    const header = document.querySelector('.header').outerHTML;
+    const mainContent = document.querySelector('.main-content');
+    mainContent.innerHTML = `<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logs Viewer</title>
+    <link rel="stylesheet" href="/css/logs.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="logs-container">
+        <div class="logs-header">
+            <h1><i class="fas fa-terminal"></i> Server Logs</h1>
+            <div class="controls">
+                <button id="tailLogs" class="btn active">
+                    <i class="fas fa-sync-alt"></i> Tail Logs
+                </button>
+                <button id="clearLogs" class="btn danger">
+                    <i class="fas fa-trash"></i> Clear
+                </button>
+                <div class="search-box">
+                    <input type="text" id="searchLogs" placeholder="Search logs...">
+                    <i class="fas fa-search"></i>
                 </div>
-                <pre id="logsOutput" style="white-space: pre-wrap; background: #000; color: #0f0; padding: 10px; border-radius: 5px; max-height: calc(100vh - 250px); overflow-y: auto;">
-Loading logs...
-                </pre>
             </div>
-        `;
+        </div>
+        <div class="logs-content" id="logsContent">
+            <!-- Logs will appear here dynamically -->
+        </div>
+    </div>
+    <script src="/js/logs.js"></script>
+</body>
+</html>
+`;
 
-        const mainContent = document.querySelector('.main-content');
-        mainContent.innerHTML = logsLayout;
+    // Logs page JS logic
+    document.addEventListener('DOMContentLoaded', () => {
+    const logsContent = document.getElementById('logsContent');
+    const tailLogsBtn = document.getElementById('tailLogs');
+    const clearLogsBtn = document.getElementById('clearLogs');
+    const searchLogs = document.getElementById('searchLogs');
+    let isTailing = true;
+    let refreshInterval;
 
-        // Load logs from server
-        function loadLogs() {
-            fetch('/logs')
-                .then(response => response.text())
-                .then(logText => {
-                    document.getElementById('logsOutput').textContent = logText;
-                })
-                .catch(error => {
-                    console.error('Error loading logs:', error);
-                    document.getElementById('logsOutput').textContent = 'Error loading logs';
-                });
-        }
-
-        // Refresh button
-        document.getElementById('refreshLogs').addEventListener('click', loadLogs);
-
-        // Clear logs button
-        document.getElementById('clearLogs').addEventListener('click', () => {
-            fetch('/clear-logs', { method: 'POST' }).then(() => loadLogs());
-        });
-
-        // Initial load
-        loadLogs();
-    });
-
-    // Handle browser back/forward
-    window.addEventListener('popstate', function() {
-        if (window.location.pathname === '/logs') {
-            document.querySelector('.nav-item i.fas.fa-file-alt').parentElement.click();
-        }
-    });
-
-    function showLoading(button, text) {
-        const icon = button.querySelector('i');
-        const originalIcon = icon.className;
-        const originalHtml = button.innerHTML;
-
-        button.disabled = true;
-        icon.className = 'fas fa-spinner fa-spin';
-        button.querySelector('.btn-text').textContent = text;
-
-        button.dataset.original = originalHtml;
-    }
-
-    function resetButton(button, text) {
-        button.disabled = false;
-        button.innerHTML = button.dataset.original;
-        button.querySelector('.btn-text').textContent = text;
-    }
-
-    // Fetch server info and update dashboard
-    function fetchServerInfo() {
-        fetch('/info')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('nodeVersion').textContent = data.server.nodeVersion;
-                document.getElementById('platform').textContent = `${data.os.platform} ${data.os.release}`;
-                document.getElementById('cpuCores').textContent = data.os.cpuCount;
-
-                const mem = data.server.memoryUsage;
-                const usedMB = Math.round(mem.heapUsed / 1024 / 1024);
-                const totalMB = Math.round(mem.heapTotal / 1024 / 1024);
-                document.getElementById('memoryUsage').textContent = `${usedMB}MB / ${totalMB}MB`;
-
-                updateUptime(data.server.uptime);
-
-                const workersRunning = data.process.workers.length > 0;
-                document.getElementById('statusStat').textContent = workersRunning ? 'Online' : 'Offline';
-                document.getElementById('statusDetail').textContent = workersRunning ? 'Running' : 'Stopped';
-
-                const statusIcon = document.querySelector('.stat-icon.danger');
-                if (workersRunning) {
-                    statusIcon.classList.remove('danger');
-                    statusIcon.classList.add('success');
-                } else {
-                    statusIcon.classList.remove('success');
-                    statusIcon.classList.add('danger');
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching server info:', error);
-            });
-    }
-
-    function updateUptime(uptimeString) {
-        const timeParts = uptimeString.match(/(\d+) hours, (\d+) minutes, (\d+) seconds/);
-        if (!timeParts) return;
-
-        let hours = parseInt(timeParts[1]);
-        let minutes = parseInt(timeParts[2]);
-        let seconds = parseInt(timeParts[3]);
-
-        updateUptimeDisplay(hours, minutes, seconds);
-
-        setInterval(() => {
-            seconds++;
-            if (seconds >= 60) {
-                seconds = 0;
-                minutes++;
-                if (minutes >= 60) {
-                    minutes = 0;
-                    hours++;
-                }
+    // Fetch logs from server
+    const fetchLogs = async () => {
+        try {
+            const response = await fetch('/logs');
+            const logs = await response.text();
+            renderLogs(logs);
+            if (isTailing) {
+                logsContent.scrollTop = logsContent.scrollHeight;
             }
-            updateUptimeDisplay(hours, minutes, seconds);
-        }, 1000);
-    }
+        } catch (error) {
+            console.error('Error fetching logs:', error);
+        }
+    };
 
-    function updateUptimeDisplay(hours, minutes, seconds) {
-        const formatted = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        document.getElementById('uptimeStat').textContent = formatted;
-    }
+    // Render logs with syntax highlighting
+    const renderLogs = (logs) => {
+        logsContent.innerHTML = logs
+            .split('\n')
+            .filter(line => line.trim() !== '')
+            .map(line => {
+                // Extract timestamp and log level
+                const timestampMatch = line.match(/\[(.*?)\]/);
+                const levelMatch = line.match(/\[(INFO|ERROR|WARN)/i);
+                
+                const timestamp = timestampMatch ? timestampMatch[1] : '';
+                const level = levelMatch ? levelMatch[1].toLowerCase() : 'info';
+                const message = line.replace(/\[.*?\]/g, '').trim();
 
-    function updateStats() {
-        document.getElementById('messagesStat').textContent = Math.floor(Math.random() * 10000);
-        document.getElementById('usersStat').textContent = Math.floor(Math.random() * 500);
-    }
+                return `
+                    <div class="log-entry">
+                        <span class="timestamp">${timestamp}</span>
+                        <span class="log-level-${level}">${level.toUpperCase()}</span>
+                        <span class="log-message">${message}</span>
+                    </div>
+                `;
+            })
+            .join('');
+    };
 
-    function updateStatus() {
-        fetch('/info')
-            .then(response => response.json())
-            .then(data => {
-                const workersRunning = data.process.workers.length > 0;
-                document.getElementById('statusStat').textContent = workersRunning ? 'Online' : 'Offline';
-                document.getElementById('statusDetail').textContent = workersRunning ? 'Running' : 'Stopped';
+    // Search logs
+    searchLogs.addEventListener('input', () => {
+        const searchTerm = searchLogs.value.toLowerCase();
+        const entries = logsContent.querySelectorAll('.log-entry');
+        
+        entries.forEach(entry => {
+            const text = entry.textContent.toLowerCase();
+            entry.style.display = text.includes(searchTerm) ? 'block' : 'none';
+        });
+    });
 
-                const statusIcon = document.querySelector('.stat-icon.danger');
-                if (workersRunning) {
-                    statusIcon.classList.remove('danger');
-                    statusIcon.classList.add('success');
-                } else {
-                    statusIcon.classList.remove('success');
-                    statusIcon.classList.add('danger');
-                }
-            });
-    }
+    // Toggle tail logs
+    tailLogsBtn.addEventListener('click', () => {
+        isTailing = !isTailing;
+        tailLogsBtn.classList.toggle('active', isTailing);
+    });
 
-    // Init dashboard
-    fetchServerInfo();
-    updateStats();
-    updateStatus();
+    // Clear logs (confirm first)
+    clearLogsBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to clear all logs?')) {
+            fetch('/clear-logs', { method: 'POST' })
+                .then(() => fetchLogs())
+                .catch(console.error);
+        }
+    });
 
-    setInterval(updateStats, 10000);
-    setInterval(fetchServerInfo, 30000);
+    // Auto-refresh every 3 seconds
+    refreshInterval = setInterval(fetchLogs, 3000);
+    fetchLogs(); // Initial load
+
+    // Cleanup on page leave
+    window.addEventListener('beforeunload', () => {
+        clearInterval(refreshInterval);
+    });
+});
+
 });
