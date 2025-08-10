@@ -15,77 +15,52 @@ const axios = require('axios');
 const workers = {};
 const logFilePath = path.join(__dirname, 'worker-logs.txt');
 
-// Initialize message and user counters
+// Initialize counters
 let messageCount = 0;
 let userCount = 0;
 
-// ======================
-// LOGGING SYSTEM IMPROVED
-// ======================
+// Logging
 function initLogFile() {
     if (!fs.existsSync(logFilePath)) {
         fs.writeFileSync(logFilePath, `[SYSTEM - ${new Date().toISOString()}] Log system initialized\n`);
     }
 }
-
 function customLogger(type, message) {
-    // Ensure log file exists
     if (!fs.existsSync(logFilePath)) {
         initLogFile();
     }
-    
     const logEntry = `[${type.toUpperCase()} - ${new Date().toISOString()}] ${message}\n`;
-    
     try {
         fs.appendFileSync(logFilePath, logEntry);
         process.stdout.write(logEntry);
-        
-        if (type === 'message') {
-            messageCount++;
-        }
+        if (type === 'message') messageCount++;
     } catch (err) {
         console.error('Failed to write logs:', err);
     }
 }
-
-// Initialize log file on startup
 initLogFile();
 
-// ======================
-// WORKER MANAGEMENT
-// ======================
-// ======================
-// WORKER MANAGEMENT
-// ======================
+// Worker management
 function start(file) {
     if (workers[file]) return;
-
     const args = [path.join(__dirname, file), ...process.argv.slice(2)];
     const worker = fork(args[0], args.slice(1));
 
-    // Improve worker message handling
     worker.on('message', (data) => {
         if (typeof data === 'string') {
-            // Handle plain string messages
             customLogger('worker', `[${file}] ${data}`);
         } else if (data.type === 'log') {
-            // Handle structured log messages
             customLogger(data.level || 'info', `[${file}:${worker.pid}] ${data.message}`);
         } else if (data.type === 'user' && data.action === 'add') {
             userCount++;
         }
     });
-
-    // Capture stdout from worker
     worker.stdout?.on('data', (data) => {
         customLogger('worker', `[${file}:stdout] ${data.toString().trim()}`);
     });
-
-    // Capture stderr from worker
     worker.stderr?.on('data', (data) => {
         customLogger('error', `[${file}:stderr] ${data.toString().trim()}`);
     });
-
     worker.on('exit', (code, signal) => {
         customLogger('error', `Child process for ${file} exited with code ${code}, signal ${signal}`);
         delete workers[file];
@@ -96,23 +71,19 @@ function start(file) {
     workers[file] = [worker];
     customLogger('info', `Started worker process for ${file} with PID ${worker.pid}`);
 }
-
 function resetProcess(file) {
     const fileWorkers = workers[file];
     if (fileWorkers) fileWorkers.forEach(worker => worker.kill());
     else customLogger('warning', `No child process running for ${file}`);
 }
-
 function BootUp() {
     customLogger('info', "Booting Up Sequence Initiated!");
     start("index.js");
 }
-
 function shutdown() {
     customLogger('info', "Shutting down the server...");
     for (const file in workers) stopProcess(file);
 }
-
 function stopProcess(file) {
     const fileWorkers = workers[file];
     if (fileWorkers) {
@@ -125,14 +96,11 @@ function stopProcess(file) {
     } else customLogger('warning', `No child processes running for ${file}`);
 }
 
-// ======================
-// SERVER SETUP
-// ======================
+// Server setup
 console.log(`==================================================\n                Server Starting...!\n==================================================`);
 const app = express();
 const port = process.env.PORT || 8000;
 
-// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -143,26 +111,19 @@ app.use(session({
     cookie: {
         secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+        maxAge: 24 * 60 * 60 * 1000
     }
 }));
 
-// ======================
-// AUTHENTICATION
-// ======================
+// Auth
 function requireAuth(req, res, next) {
     if (req.session && req.session.authenticated) return next();
     res.redirect('/login');
 }
-
-// ======================
-// ROUTES
-// ======================
 app.post('/auth', (req, res) => {
     const { username, password } = req.body;
     const adminUser = process.env.ADMIN_USERNAME || 'admin';
     const adminPass = process.env.ADMIN_PASSWORD || 'password123';
-    
     if (username === adminUser && password === adminPass) {
         req.session.authenticated = true;
         req.session.username = username;
@@ -172,11 +133,9 @@ app.post('/auth', (req, res) => {
     customLogger('auth', `Failed login attempt for ${username}`);
     return res.sendStatus(401);
 });
-
 app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'login.html'));
 });
-
 app.get('/logout', (req, res) => {
     customLogger('auth', `User ${req.session.username || 'unknown'} logged out`);
     req.session.destroy(err => {
@@ -187,14 +146,11 @@ app.get('/logout', (req, res) => {
         res.redirect('/login');
     });
 });
-
 app.get('/', requireAuth, (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'dashboard.html'));
 });
 
-// ======================
-// LOGS MANAGEMENT
-// ======================
+// Logs
 app.get('/logs', requireAuth, (req, res) => {
     fs.readFile(logFilePath, 'utf8', (err, data) => {
         if (err) {
@@ -207,11 +163,6 @@ app.get('/logs', requireAuth, (req, res) => {
         res.type('text/plain').send(data || '[SYSTEM] Log file is empty.');
     });
 });
-
-app.get('/logs-page', requireAuth, (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'logs.html'));
-});
-
 app.post('/clear-logs', requireAuth, (req, res) => {
     fs.writeFile(logFilePath, `[SYSTEM - ${new Date().toISOString()}] Logs were cleared by ${req.session.username || 'admin'}\n`, (err) => {
         if (err) {
@@ -223,9 +174,7 @@ app.post('/clear-logs', requireAuth, (req, res) => {
     });
 });
 
-// ======================
-// SERVER INFO ENDPOINTS
-// ======================
+// Info & Stats
 app.get('/info', requireAuth, async (req, res) => {
     try {
         const geolocation = await getGeolocation();
@@ -267,7 +216,6 @@ app.get('/info', requireAuth, async (req, res) => {
         res.status(500).send("Error generating server info");
     }
 });
-
 app.get('/stats', requireAuth, (req, res) => {
     res.json({
         messages: messageCount,
@@ -278,36 +226,29 @@ app.get('/stats', requireAuth, (req, res) => {
     });
 });
 
-// ======================
-// CONTROL ENDPOINTS
-// ======================
+// Control
 app.post('/restart', requireAuth, (req, res) => {
     customLogger('system', 'Restart initiated via admin panel');
     for (const file in workers) resetProcess(file);
     res.sendStatus(200);
 });
-
 app.post('/update', requireAuth, (req, res) => {
     customLogger('system', 'Update initiated via admin panel');
     deleteSession();
     res.sendStatus(200);
 });
-
 app.post('/shutdown', requireAuth, (req, res) => {
     customLogger('system', 'Shutdown initiated via admin panel');
     shutdown();
     res.sendStatus(200);
 });
-
 app.post('/bootup', requireAuth, (req, res) => {
     customLogger('system', 'Manual bootup initiated');
     BootUp();
     res.sendStatus(200);
 });
 
-// ======================
-// UTILITY FUNCTIONS
-// ======================
+// Utilities
 async function getGeolocation() {
     try {
         const response = await axios.get('http://ip-api.com/json/');
@@ -317,7 +258,6 @@ async function getGeolocation() {
         return { error: 'Unable to fetch geolocation' };
     }
 }
-
 function formatUptime(seconds) {
     const years = Math.floor(seconds / (365 * 24 * 60 * 60));
     seconds %= 365 * 24 * 60 * 60;
@@ -336,7 +276,6 @@ function formatUptime(seconds) {
     uptime += `${hours} hours, ${minutes} minutes, ${secs} seconds`;
     return uptime;
 }
-
 function deleteSession() {
     fs.readdir('session/', (err, files) => {
         if (err) {
@@ -357,25 +296,19 @@ function deleteSession() {
     });
 }
 
-// ======================
-// SERVER START
-// ======================
+// Start server
 app.listen(port, () => {
     customLogger('system', `Server started on port ${port}`);
     messageCount = Math.floor(Math.random() * 10000);
     userCount = Math.floor(Math.random() * 500);
     BootUp();
-    
-    // Test log every 5 minutes
     setInterval(() => {
         customLogger('debug', 'System heartbeat check');
     }, 300000);
 });
-
 process.on('uncaughtException', (err) => {
     customLogger('critical', `UNCAUGHT EXCEPTION: ${err.stack || err.message}`);
 });
-
 process.on('unhandledRejection', (reason, promise) => {
     customLogger('critical', `UNHANDLED REJECTION at ${promise}, reason: ${reason}`);
 });
