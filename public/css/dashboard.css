@@ -379,11 +379,9 @@ body {
 
 .logs-content-container {
     padding: 20px;
-    height: calc(100vh - 80px);
-    width: 100%;
-    box-sizing: border-box;
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    overflow-y: auto;
+    margin: 20px;
+    min-height: calc(100vh - 160px);
 }
