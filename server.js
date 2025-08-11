@@ -191,11 +191,14 @@ app.get('/logout', (req, res) => {
 app.get('/', requireAuth, (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'dashboard.html'));
 });
+app.get('/logs', requireAuth, (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'dashboard.html'));
+});
 
 // ======================
 // LOGS MANAGEMENT
 // ======================
-app.get('/logs', requireAuth, (req, res) => {
+app.get('/api/logs', requireAuth, (req, res) => {
     fs.readFile(logFilePath, 'utf8', (err, data) => {
         if (err) {
             if (err.code === 'ENOENT') {
@@ -208,9 +211,6 @@ app.get('/logs', requireAuth, (req, res) => {
     });
 });
 
-app.get('/logs-page', requireAuth, (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'logs.html'));
-});
 
 app.post('/clear-logs', requireAuth, (req, res) => {
     fs.writeFile(logFilePath, `[SYSTEM - ${new Date().toISOString()}] Logs were cleared by ${req.session.username || 'admin'}\n`, (err) => {
