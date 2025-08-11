@@ -48,21 +48,23 @@
 
         <!-- Main Content (Dynamic) -->
         <div class="main-content">
+            <!-- Header/profile area is always visible -->
+            <div class="header" id="mainHeader">
+                <h2 id="headerTitle">Dashboard Overview</h2>
+                <div class="user-profile">
+                    <div class="user-avatar" id="userAvatar">A</div>
+                    <div class="user-info">
+                        <span class="user-name" id="usernameDisplay">Admin</span>
+                        <span class="user-role">Administrator</span>
+                    </div>
+                    <button class="theme-toggle" id="themeToggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+
             <!-- Dashboard Overview Section -->
             <section id="dashboardSection">
-                <div class="header">
-                    <h2>Dashboard Overview</h2>
-                    <div class="user-profile">
-                        <div class="user-avatar" id="userAvatar">A</div>
-                        <div class="user-info">
-                            <span class="user-name" id="usernameDisplay">Admin</span>
-                            <span class="user-role">Administrator</span>
-                        </div>
-                        <button class="theme-toggle" id="themeToggle">
-                            <i class="fas fa-moon"></i>
-                        </button>
-                    </div>
-                </div>
                 <!-- Stats Cards -->
                 <div class="stats-grid">
                     <div class="stat-card">
@@ -171,19 +173,6 @@
 
             <!-- Logs Viewer Section (hidden by default) -->
             <section id="logsSection" style="display:none;">
-                <div class="header">
-                    <h2>Server Logs</h2>
-                    <div class="user-profile">
-                        <div class="user-avatar" id="userAvatarLogs">A</div>
-                        <div class="user-info">
-                            <span class="user-name" id="usernameDisplayLogs">Admin</span>
-                            <span class="user-role">Administrator</span>
-                        </div>
-                        <button class="theme-toggle" id="themeToggleLogs">
-                            <i class="fas fa-moon"></i>
-                        </button>
-                    </div>
-                </div>
                 <div class="logs-container">
                     <div class="logs-header">
                         <h1><i class="fas fa-terminal"></i> Server Logs</h1>
@@ -222,14 +211,10 @@
         function showSection(sectionId) {
             document.getElementById('dashboardSection').style.display = (sectionId === 'dashboardSection') ? '' : 'none';
             document.getElementById('logsSection').style.display = (sectionId === 'logsSection') ? '' : 'none';
-        }
 
-        // Sync user avatar/name in both sections
-        function syncProfile() {
-            const avatar = document.getElementById('userAvatar').textContent;
-            const name = document.getElementById('usernameDisplay').textContent;
-            document.getElementById('userAvatarLogs').textContent = avatar;
-            document.getElementById('usernameDisplayLogs').textContent = name;
+            // Change header title
+            document.getElementById('headerTitle').textContent =
+                sectionId === 'dashboardSection' ? 'Dashboard Overview' : 'Server Logs';
         }
 
         // Handle navigation clicks
@@ -245,7 +230,6 @@
             setActiveNav('navLogs');
             showSection('logsSection');
             window.history.pushState({}, '', '/logs');
-            syncProfile();
             // Optionally, re-fetch logs if needed:
             if (typeof fetchLogs === "function") fetchLogs();
         });
@@ -255,7 +239,6 @@
             if (window.location.pathname === '/logs') {
                 setActiveNav('navLogs');
                 showSection('logsSection');
-                syncProfile();
             } else {
                 setActiveNav('navDashboard');
                 showSection('dashboardSection');
@@ -266,7 +249,6 @@
         if (window.location.pathname === '/logs') {
             setActiveNav('navLogs');
             showSection('logsSection');
-            syncProfile();
         } else {
             setActiveNav('navDashboard');
             showSection('dashboardSection');
