@@ -38,138 +38,129 @@ document.addEventListener('DOMContentLoaded', function() {
             .finally(() => resetButton(this, 'Boot Up'));
     });
 
-    // ========================
-    // UPDATED LOGS CLICK HANDLER
-    // ========================
-    // Logs click handler replaced by merged logs.js logic
-
-// === Logs Page Handler (merged from logs.js) ===
-document.querySelector('.nav-item i.fas.fa-file-alt').parentElement.addEventListener('click', function(e) {
-    e.preventDefault();
-    window.history.pushState({}, '', '/logs');
-
-    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-    this.classList.add('active');
-
-    const header = document.querySelector('.header').outerHTML;
-    const mainContent = document.querySelector('.main-content');
-    mainContent.innerHTML = `<!DOCTYPE html>
-<html lang="en" class="dark">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Logs Viewer</title>
-    <link rel="stylesheet" href="/css/logs.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body>
-    <div class="logs-container">
-        <div class="logs-header">
-            <h1><i class="fas fa-terminal"></i> Server Logs</h1>
-            <div class="controls">
-                <button id="tailLogs" class="btn active">
-                    <i class="fas fa-sync-alt"></i> Tail Logs
-                </button>
-                <button id="clearLogs" class="btn danger">
-                    <i class="fas fa-trash"></i> Clear
-                </button>
-                <div class="search-box">
-                    <input type="text" id="searchLogs" placeholder="Search logs...">
-                    <i class="fas fa-search"></i>
-                </div>
-            </div>
-        </div>
-        <div class="logs-content" id="logsContent">
-            <!-- Logs will appear here dynamically -->
-        </div>
-    </div>
-    <script src="/js/logs.js"></script>
-</body>
-</html>
-`;
-
-    // Logs page JS logic
-    document.addEventListener('DOMContentLoaded', () => {
-    const logsContent = document.getElementById('logsContent');
-    const tailLogsBtn = document.getElementById('tailLogs');
-    const clearLogsBtn = document.getElementById('clearLogs');
-    const searchLogs = document.getElementById('searchLogs');
-    let isTailing = true;
-    let refreshInterval;
-
-    // Fetch logs from server
-    const fetchLogs = async () => {
-        try {
-            const response = await fetch('/logs');
-            const logs = await response.text();
-            renderLogs(logs);
-            if (isTailing) {
-                logsContent.scrollTop = logsContent.scrollHeight;
-            }
-        } catch (error) {
-            console.error('Error fetching logs:', error);
-        }
-    };
-
-    // Render logs with syntax highlighting
-    const renderLogs = (logs) => {
-        logsContent.innerHTML = logs
-            .split('\n')
-            .filter(line => line.trim() !== '')
-            .map(line => {
-                // Extract timestamp and log level
-                const timestampMatch = line.match(/\[(.*?)\]/);
-                const levelMatch = line.match(/\[(INFO|ERROR|WARN)/i);
-                
-                const timestamp = timestampMatch ? timestampMatch[1] : '';
-                const level = levelMatch ? levelMatch[1].toLowerCase() : 'info';
-                const message = line.replace(/\[.*?\]/g, '').trim();
-
-                return `
-                    <div class="log-entry">
-                        <span class="timestamp">${timestamp}</span>
-                        <span class="log-level-${level}">${level.toUpperCase()}</span>
-                        <span class="log-message">${message}</span>
-                    </div>
-                `;
-            })
-            .join('');
-    };
-
-    // Search logs
-    searchLogs.addEventListener('input', () => {
-        const searchTerm = searchLogs.value.toLowerCase();
-        const entries = logsContent.querySelectorAll('.log-entry');
+    function showLoading(button, text) {
+        const icon = button.querySelector('i');
+        const originalIcon = icon.className;
+        const originalHtml = button.innerHTML;
         
-        entries.forEach(entry => {
-            const text = entry.textContent.toLowerCase();
-            entry.style.display = text.includes(searchTerm) ? 'block' : 'none';
-        });
-    });
+        button.disabled = true;
+        icon.className = 'fas fa-spinner fa-spin';
+        button.querySelector('.btn-text').textContent = text;
+        
+        button.dataset.original = originalHtml;
+    }
 
-    // Toggle tail logs
-    tailLogsBtn.addEventListener('click', () => {
-        isTailing = !isTailing;
-        tailLogsBtn.classList.toggle('active', isTailing);
-    });
+    function resetButton(button, text) {
+        button.disabled = false;
+        button.innerHTML = button.dataset.original;
+        button.querySelector('.btn-text').textContent = text;
+    }
 
-    // Clear logs (confirm first)
-    clearLogsBtn.addEventListener('click', () => {
-        if (confirm('Are you sure you want to clear all logs?')) {
-            fetch('/clear-logs', { method: 'POST' })
-                .then(() => fetchLogs())
-                .catch(console.error);
-        }
-    });
+    // Fetch server info and update dashboard
+    function fetchServerInfo() {
+        fetch('/info')
+            .then(response => response.json())
+            .then(data => {
+                // Update server info
+                document.getElementById('nodeVersion').textContent = data.server.nodeVersion;
+                document.getElementById('platform').textContent = `${data.os.platform} ${data.os.release}`;
+                document.getElementById('cpuCores').textContent = data.os.cpuCount;
+                
+                // Format memory usage
+                const mem = data.server.memoryUsage;
+                const usedMB = Math.round(mem.heapUsed / 1024 / 1024);
+                const totalMB = Math.round(mem.heapTotal / 1024 / 1024);
+                document.getElementById('memoryUsage').textContent = `${usedMB}MB / ${totalMB}MB`;
+                
+                // Update uptime
+                updateUptime(data.server.uptime);
+                
+                // Update bot status
+                const workersRunning = data.process.workers.length > 0;
+                document.getElementById('statusStat').textContent = workersRunning ? 'Online' : 'Offline';
+                document.getElementById('statusDetail').textContent = workersRunning ? 'Running' : 'Stopped';
+                
+                // Change status color
+                const statusIcon = document.querySelector('.stat-icon.danger');
+                if (workersRunning) {
+                    statusIcon.classList.remove('danger');
+                    statusIcon.classList.add('success');
+                } else {
+                    statusIcon.classList.remove('success');
+                    statusIcon.classList.add('danger');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching server info:', error);
+            });
+    }
 
-    // Auto-refresh every 3 seconds
-    refreshInterval = setInterval(fetchLogs, 3000);
-    fetchLogs(); // Initial load
+    // Parse uptime from string and update every second
+    function updateUptime(uptimeString) {
+        // Extract time parts from the uptime string
+        const timeParts = uptimeString.match(/(\d+) hours, (\d+) minutes, (\d+) seconds/);
+        if (!timeParts) return;
+        
+        let hours = parseInt(timeParts[1]);
+        let minutes = parseInt(timeParts[2]);
+        let seconds = parseInt(timeParts[3]);
+        
+        // Update the display immediately
+        updateUptimeDisplay(hours, minutes, seconds);
+        
+        // Set up interval to update every second
+        setInterval(() => {
+            seconds++;
+            if (seconds >= 60) {
+                seconds = 0;
+                minutes++;
+                if (minutes >= 60) {
+                    minutes = 0;
+                    hours++;
+                }
+            }
+            updateUptimeDisplay(hours, minutes, seconds);
+        }, 1000);
+    }
 
-    // Cleanup on page leave
-    window.addEventListener('beforeunload', () => {
-        clearInterval(refreshInterval);
-    });
-});
+    function updateUptimeDisplay(hours, minutes, seconds) {
+        const formatted = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        document.getElementById('uptimeStat').textContent = formatted;
+    }
 
+    // Simulate message and user counts (replace with real data)
+    function updateStats() {
+        // These would ideally come from your backend API
+        document.getElementById('messagesStat').textContent = Math.floor(Math.random() * 10000);
+        document.getElementById('usersStat').textContent = Math.floor(Math.random() * 500);
+    }
+
+    // Check bot status
+    function updateStatus() {
+        fetch('/info')
+            .then(response => response.json())
+            .then(data => {
+                const workersRunning = data.process.workers.length > 0;
+                document.getElementById('statusStat').textContent = workersRunning ? 'Online' : 'Offline';
+                document.getElementById('statusDetail').textContent = workersRunning ? 'Running' : 'Stopped';
+                
+                const statusIcon = document.querySelector('.stat-icon.danger');
+                if (workersRunning) {
+                    statusIcon.classList.remove('danger');
+                    statusIcon.classList.add('success');
+                } else {
+                    statusIcon.classList.remove('success');
+                    statusIcon.classList.add('danger');
+                }
+            });
+    }
+
+    // Initialize dashboard
+    fetchServerInfo();
+    updateStats();
+    updateStatus();
+    
+    // Update stats periodically
+    setInterval(updateStats, 10000);
+    setInterval(fetchServerInfo, 30000);
 });
