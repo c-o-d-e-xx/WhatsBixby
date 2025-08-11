@@ -1,0 +1,124 @@
+:root {
+    --primary: #2979ff;
+    --bg-dark: #181b26;
+    --bg-light: #f6f8fa;
+    --sidebar: #21243b;
+    --card: #24283b;
+    --text: #f8f8f2;
+    --danger: #e74c3c;
+    --success: #43a047;
+    --border-radius: 8px;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: var(--bg-light);
+    color: #222;
+}
+
+h2 {
+    font-weight: 600;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#fileList {
+    margin-top: 24px;
+    display: flex; flex-direction: column; gap: 10px;
+}
+
+.file-item {
+    background: var(--card);
+    color: var(--text);
+    padding: 12px 18px;
+    border-radius: var(--border-radius);
+    display: flex; align-items: center; gap: 16px;
+    box-shadow: 0 2px 8px #00000010;
+}
+
+.file-item span {
+    flex: 1;
+    font-size: 1.07em;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    color: var(--primary);
+    cursor: pointer;
+    font-size: 1.1em;
+    border-radius: 50%;
+    transition: background .2s;
+}
+
+.icon-btn:hover {
+    background: #2979ff22;
+}
+
+.file-item .icon-btn {
+    margin-right: 0;
+}
+
+#fileEditor {
+    margin-top: 32px;
+    background: var(--card);
+    padding: 24px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 12px #00000020;
+    color: var(--text);
+}
+
+.editor-header {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 1.08em; margin-bottom: 12px;
+}
+
+#editorContent {
+    width: 100%; min-height: 200px;
+    font-family: "Fira Mono", "Consolas", monospace;
+    font-size: 15px;
+    background: #23263b;
+    color: var(--text);
+    border: 1px solid #2979ff55;
+    border-radius: var(--border-radius);
+    padding: 10px;
+    margin-bottom: 10px;
+    resize: vertical;
+}
+
+.editor-actions {
+    display: flex; gap: 16px;
+    margin-top: 8px;
+}
+
+#saveBtn {
+    background: var(--primary); color: #fff;
+    border: none; border-radius: var(--border-radius);
+    padding: 10px 18px; font-size: 1em;
+    cursor: pointer;
+    transition: background .2s;
+    display: flex; align-items: center; gap: 4px;
+}
+
+#saveBtn:hover {
+    background: #1565c0;
+}
+
+#notification {
+    margin-top: 16px;
+    background: var(--success);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: var(--border-radius);
+    font-size: 1em;
+    box-shadow: 0 2px 12px #00000010;
+    animation: fadeIn .6s;
+}
+@keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(20px);}
+    100% { opacity: 1; transform: translateY(0);}
+}
+#notification.error { background: var(--danger); }
