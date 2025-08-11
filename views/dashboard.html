@@ -6,6 +6,7 @@
     <title>Bot Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/logs.css">
 </head>
 <body>
     <div class="dashboard">
@@ -15,30 +16,28 @@
                 <i class="fas fa-robot"></i>
                 <h1>Bot Manager</h1>
             </div>
-
             <div class="nav-menu">
-                <a href="#" class="nav-item active">
+                <a href="/" class="nav-item active" id="navDashboard">
                     <i class="fas fa-tachometer-alt"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="#" class="nav-item">
+                <a href="#" class="nav-item" id="navUsers">
                     <i class="fas fa-users"></i>
                     <span>Users</span>
                 </a>
-                <a href="#" class="nav-item">
+                <a href="#" class="nav-item" id="navMessages">
                     <i class="fas fa-comments"></i>
                     <span>Messages</span>
                 </a>
-                <a href="#" class="nav-item">
+                <a href="#" class="nav-item" id="navSettings">
                     <i class="fas fa-cog"></i>
                     <span>Settings</span>
                 </a>
-                <a href="#" class="nav-item">
+                <a href="/logs" class="nav-item" id="navLogs">
                     <i class="fas fa-file-alt"></i>
                     <span>Logs</span>
                 </a>
             </div>
-
             <div class="sidebar-footer">
                 <a href="#" class="nav-item" id="logoutButton">
                     <i class="fas fa-sign-out-alt"></i>
@@ -47,139 +46,232 @@
             </div>
         </div>
 
-        <!-- Main Content -->
+        <!-- Main Content (Dynamic) -->
         <div class="main-content">
-            <div class="header">
-                <h2>Dashboard Overview</h2>
-                
-                <div class="user-profile">
-                    <div class="user-avatar" id="userAvatar">A</div>
-                    <div class="user-info">
-                        <span class="user-name" id="usernameDisplay">Admin</span>
-                        <span class="user-role">Administrator</span>
+            <!-- Dashboard Overview Section -->
+            <section id="dashboardSection">
+                <div class="header">
+                    <h2>Dashboard Overview</h2>
+                    <div class="user-profile">
+                        <div class="user-avatar" id="userAvatar">A</div>
+                        <div class="user-info">
+                            <span class="user-name" id="usernameDisplay">Admin</span>
+                            <span class="user-role">Administrator</span>
+                        </div>
+                        <button class="theme-toggle" id="themeToggle">
+                            <i class="fas fa-moon"></i>
+                        </button>
                     </div>
-                    <button class="theme-toggle" id="themeToggle">
-                        <i class="fas fa-moon"></i>
-                    </button>
                 </div>
-            </div>
-
-            <!-- Stats Cards -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div>
-                            <div class="stat-title">Uptime</div>
-                            <div class="stat-value" id="uptimeStat">00:00:00</div>
-                            <div class="stat-change positive">
-                                <i class="fas fa-arrow-up"></i> 100% stable
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-title">Uptime</div>
+                                <div class="stat-value" id="uptimeStat">00:00:00</div>
+                                <div class="stat-change positive">
+                                    <i class="fas fa-arrow-up"></i> 100% stable
+                                </div>
+                            </div>
+                            <div class="stat-icon primary">
+                                <i class="fas fa-clock"></i>
                             </div>
                         </div>
-                        <div class="stat-icon primary">
-                            <i class="fas fa-clock"></i>
-                        </div>
                     </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div>
-                            <div class="stat-title">Total Messages</div>
-                            <div class="stat-value" id="messagesStat">0</div>
-                            <div class="stat-change positive">
-                                <i class="fas fa-arrow-up"></i> 12% today
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-title">Total Messages</div>
+                                <div class="stat-value" id="messagesStat">0</div>
+                                <div class="stat-change positive">
+                                    <i class="fas fa-arrow-up"></i> 12% today
+                                </div>
+                            </div>
+                            <div class="stat-icon success">
+                                <i class="fas fa-comment-dots"></i>
                             </div>
                         </div>
-                        <div class="stat-icon success">
-                            <i class="fas fa-comment-dots"></i>
-                        </div>
                     </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div>
-                            <div class="stat-title">Active Users</div>
-                            <div class="stat-value" id="usersStat">0</div>
-                            <div class="stat-change negative">
-                                <i class="fas fa-arrow-down"></i> 5% today
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-title">Active Users</div>
+                                <div class="stat-value" id="usersStat">0</div>
+                                <div class="stat-change negative">
+                                    <i class="fas fa-arrow-down"></i> 5% today
+                                </div>
+                            </div>
+                            <div class="stat-icon warning">
+                                <i class="fas fa-users"></i>
                             </div>
                         </div>
-                        <div class="stat-icon warning">
-                            <i class="fas fa-users"></i>
-                        </div>
                     </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div>
-                            <div class="stat-title">Bot Status</div>
-                            <div class="stat-value" id="statusStat">Offline</div>
-                            <div class="stat-change">
-                                <i class="fas fa-circle"></i> <span id="statusDetail">Not running</span>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-title">Bot Status</div>
+                                <div class="stat-value" id="statusStat">Offline</div>
+                                <div class="stat-change">
+                                    <i class="fas fa-circle"></i> <span id="statusDetail">Not running</span>
+                                </div>
+                            </div>
+                            <div class="stat-icon danger">
+                                <i class="fas fa-power-off"></i>
                             </div>
                         </div>
-                        <div class="stat-icon danger">
-                            <i class="fas fa-power-off"></i>
+                    </div>
+                </div>
+                <!-- Control Buttons -->
+                <div class="controls-grid">
+                    <div class="control-btn success" id="bootupButton">
+                        <i class="fas fa-power-off"></i>
+                        <div class="btn-text">Boot Up</div>
+                        <div class="btn-desc">Start the bot service</div>
+                    </div>
+                    <div class="control-btn" id="resetButton">
+                        <i class="fas fa-sync-alt"></i>
+                        <div class="btn-text">Restart</div>
+                        <div class="btn-desc">Restart the bot service</div>
+                    </div>
+                    <div class="control-btn warning" id="updateButton">
+                        <i class="fas fa-cloud-download-alt"></i>
+                        <div class="btn-text">Update</div>
+                        <div class="btn-desc">Update to latest version</div>
+                    </div>
+                    <div class="control-btn danger" id="stopButton">
+                        <i class="fas fa-stop-circle"></i>
+                        <div class="btn-text">Stop</div>
+                        <div class="btn-desc">Shutdown the bot service</div>
+                    </div>
+                </div>
+                <!-- Server Information -->
+                <div class="server-info">
+                    <h3><i class="fas fa-server"></i> Server Information</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Node Version</div>
+                            <div class="info-value" id="nodeVersion">Loading...</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Memory Usage</div>
+                            <div class="info-value" id="memoryUsage">Loading...</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">CPU Cores</div>
+                            <div class="info-value" id="cpuCores">Loading...</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Platform</div>
+                            <div class="info-value" id="platform">Loading...</div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <!-- Control Buttons -->
-            <div class="controls-grid">
-                <div class="control-btn success" id="bootupButton">
-                    <i class="fas fa-power-off"></i>
-                    <div class="btn-text">Boot Up</div>
-                    <div class="btn-desc">Start the bot service</div>
-                </div>
-
-                <div class="control-btn" id="resetButton">
-                    <i class="fas fa-sync-alt"></i>
-                    <div class="btn-text">Restart</div>
-                    <div class="btn-desc">Restart the bot service</div>
-                </div>
-
-                <div class="control-btn warning" id="updateButton">
-                    <i class="fas fa-cloud-download-alt"></i>
-                    <div class="btn-text">Update</div>
-                    <div class="btn-desc">Update to latest version</div>
-                </div>
-
-                <div class="control-btn danger" id="stopButton">
-                    <i class="fas fa-stop-circle"></i>
-                    <div class="btn-text">Stop</div>
-                    <div class="btn-desc">Shutdown the bot service</div>
-                </div>
-            </div>
-
-            <!-- Server Information -->
-            <div class="server-info">
-                <h3><i class="fas fa-server"></i> Server Information</h3>
-                <div class="info-grid">
-                    <div class="info-item">
-                        <div class="info-label">Node Version</div>
-                        <div class="info-value" id="nodeVersion">Loading...</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Memory Usage</div>
-                        <div class="info-value" id="memoryUsage">Loading...</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">CPU Cores</div>
-                        <div class="info-value" id="cpuCores">Loading...</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Platform</div>
-                        <div class="info-value" id="platform">Loading...</div>
+            <!-- Logs Viewer Section (hidden by default) -->
+            <section id="logsSection" style="display:none;">
+                <div class="header">
+                    <h2>Server Logs</h2>
+                    <div class="user-profile">
+                        <div class="user-avatar" id="userAvatarLogs">A</div>
+                        <div class="user-info">
+                            <span class="user-name" id="usernameDisplayLogs">Admin</span>
+                            <span class="user-role">Administrator</span>
+                        </div>
+                        <button class="theme-toggle" id="themeToggleLogs">
+                            <i class="fas fa-moon"></i>
+                        </button>
                     </div>
                 </div>
-            </div>
+                <div class="logs-container">
+                    <div class="logs-header">
+                        <h1><i class="fas fa-terminal"></i> Server Logs</h1>
+                        <div class="controls">
+                            <button id="tailLogs" class="btn active">
+                                <i class="fas fa-sync-alt"></i> Tail Logs
+                            </button>
+                            <button id="clearLogs" class="btn danger">
+                                <i class="fas fa-trash"></i> Clear
+                            </button>
+                            <div class="search-box">
+                                <input type="text" id="searchLogs" placeholder="Search logs...">
+                                <i class="fas fa-search"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="logs-content" id="logsContent">
+                        <!-- Logs will appear here dynamically -->
+                    </div>
+                </div>
+            </section>
         </div>
     </div>
 
     <script src="/js/theme.js"></script>
     <script src="/js/dashboard.js"></script>
+    <script src="/js/logs.js"></script>
+    <script>
+    // --- Dynamic swapping logic ---
+    document.addEventListener('DOMContentLoaded', function() {
+        function setActiveNav(navId) {
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.getElementById(navId).classList.add('active');
+        }
+
+        function showSection(sectionId) {
+            document.getElementById('dashboardSection').style.display = (sectionId === 'dashboardSection') ? '' : 'none';
+            document.getElementById('logsSection').style.display = (sectionId === 'logsSection') ? '' : 'none';
+        }
+
+        // Sync user avatar/name in both sections
+        function syncProfile() {
+            const avatar = document.getElementById('userAvatar').textContent;
+            const name = document.getElementById('usernameDisplay').textContent;
+            document.getElementById('userAvatarLogs').textContent = avatar;
+            document.getElementById('usernameDisplayLogs').textContent = name;
+        }
+
+        // Handle navigation clicks
+        document.getElementById('navDashboard').addEventListener('click', function(e) {
+            e.preventDefault();
+            setActiveNav('navDashboard');
+            showSection('dashboardSection');
+            window.history.pushState({}, '', '/');
+        });
+
+        document.getElementById('navLogs').addEventListener('click', function(e) {
+            e.preventDefault();
+            setActiveNav('navLogs');
+            showSection('logsSection');
+            window.history.pushState({}, '', '/logs');
+            syncProfile();
+            // Optionally, re-fetch logs if needed:
+            if (typeof fetchLogs === "function") fetchLogs();
+        });
+
+        // Handle browser navigation (back/forward)
+        window.addEventListener('popstate', function() {
+            if (window.location.pathname === '/logs') {
+                setActiveNav('navLogs');
+                showSection('logsSection');
+                syncProfile();
+            } else {
+                setActiveNav('navDashboard');
+                showSection('dashboardSection');
+            }
+        });
+
+        // On page load, route to correct section
+        if (window.location.pathname === '/logs') {
+            setActiveNav('navLogs');
+            showSection('logsSection');
+            syncProfile();
+        } else {
+            setActiveNav('navDashboard');
+            showSection('dashboardSection');
+        }
+    });
+    </script>
 </body>
 </html>
