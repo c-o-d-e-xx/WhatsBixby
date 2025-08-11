@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fetch logs from server
     const fetchLogs = async () => {
         try {
-            const response = await fetch('/logs');
+            const response = await fetch('/api/logs');
             const logs = await response.text();
             renderLogs(logs);
             if (isTailing) {
